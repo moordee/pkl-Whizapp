@@ -286,7 +286,7 @@
 
         <!-- ══ SIDEBAR ══ -->
         <div class="sidebar" id="sidebar">
-            <a href="#"><img src="icons/Registration.png" width="27" height="27"> Modify Board</a>
+            <a href="/profile"><img src="icons/Registration.png" width="27" height="27"> My Profile</a>
             <a href="#"><img src="icons/ListView.png" width="27" height="27"> Wishlist Board</a>
             <a href="#" class="ps-5"><img src="icons/90px_AddShoppingCart.png" width="27" height="27"> Add</a>
             <a href="#" class="ps-5"><img src="icons/Delete.png" width="27" height="27"> Delete</a>
@@ -294,7 +294,7 @@
             <a href="#"><img src="icons/95px_Gift.png" width="27" height="27"> Referral</a>
             <a href="#"><img src="icons/Member.png" width="27" height="27"> AI Integration</a>
             <a href="#"><img src="icons/DuplicateContacts.png" width="27" height="27"> Contact Form</a>
-            <a href="#"><img src="icons/Settings.png" width="27" height="27"> Setting</a>
+            <a href="#"><img src="icons/Settings.png" width="27" height="27"> Settings</a>
             <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Log out</a>
         </div>
 
