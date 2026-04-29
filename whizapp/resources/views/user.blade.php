@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Whizapp Profile</title>
+    <title>Whizapp: User Profile</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="logo/logo.png" rel="icon" type="image/png">
     <style>
         body {
             background: linear-gradient(180deg,
@@ -106,16 +106,16 @@
     <div class="d-flex" style="min-height: calc(100vh - 60px);">
 
         <div class="sidebar" id="sidebar">
-            <a href="#"><img src="Registration.png" width="27" height="27"> Modify Board</a>
-            <a href="#"><img src="List View.png" width="27" height="27"> Wishlist Board</a>
-            <a href="#" class="ps-5"><img src="Add Shopping Cart.png" width="27" height="27"> Add</a>
-            <a href="#" class="ps-5"><img src="Delete.png" width="27" height="27"> Delete</a>
-            <a href="#"><img src="Forward Arrow.png" width="27" height="27"> Share Wishlist</a>
-            <a href="#"><img src="Gift.png" width="27" height="27"> Referral</a>
-            <a href="#"><img src="Member.png" width="27" height="27"> AI Integration</a>
-            <a href="#"><img src="Duplicate Contacts.png" width="27" height="27"> Contact Form</a>
-            <a href="#"><img src="Settings.png" width="27" height="27"> Setting</a>
-            <a href="#"><img src="Logout Rounded.png" width="27" height="27"> Log out</a>
+            <a href="#"><img src="icons/Registration.png" width="27" height="27"> Modify Board</a>
+            <a href="#"><img src="icons/ListView.png" width="27" height="27"> Wishlist Board</a>
+            <a href="#" class="ps-5"><img src="icons/90px_AddShoppingCart.png" width="27" height="27"> Add</a>
+            <a href="#" class="ps-5"><img src="icons/Delete.png" width="27" height="27"> Delete</a>
+            <a href="#"><img src="icons/95px_ForwardArrow.png" width="27" height="27"> Share Wishlist</a>
+            <a href="#"><img src="icons/95px_Gift.png" width="27" height="27"> Referral</a>
+            <a href="#"><img src="icons/Member.png" width="27" height="27"> AI Integration</a>
+            <a href="#"><img src="icons/DuplicateContacts.png" width="27" height="27"> Contact Form</a>
+            <a href="#"><img src="icons/Settings.png" width="27" height="27"> Setting</a>
+            <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Log out</a>
         </div>
 
         <div class="content">
@@ -124,7 +124,7 @@
                     <input type="file" id="upload" hidden onchange="previewImage(event)">
 
                     <!-- DEFAULT FOTO (tidak random lagi) -->
-                    <img src="ibu.jpg" class="profile-img" id="profilePreview"
+                    <img src="img/ibu.jpg" class="profile-img" id="profilePreview"
                         onclick="document.getElementById('upload').click()">
                 </div>
 
@@ -175,7 +175,7 @@
         // PREVIEW + SIMPAN FOTO
         function previewImage(event) {
             const reader = new FileReader();
-            reader.onload = function () {
+            reader.onload = function() {
                 const imgData = reader.result;
 
                 document.getElementById('profilePreview').src = imgData;
@@ -187,7 +187,7 @@
         }
 
         // AMBIL SAAT REFRESH
-        window.onload = function () {
+        window.onload = function() {
             const savedImage = localStorage.getItem('profileImage');
             if (savedImage) {
                 document.getElementById('profilePreview').src = savedImage;
