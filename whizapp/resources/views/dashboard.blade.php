@@ -11,6 +11,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="logo/logo.png" rel="icon" type="image/png">
     <style>
+          @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+        * {
+            font-family: 'Nunito', sans-serif;
+        }
         body {
             background: linear-gradient(180deg,
                     rgba(63, 43, 150, 1) 0%,
@@ -21,29 +26,48 @@
             color: white;
         }
 
-        .navbar {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+              .topbar {
+            height: 60px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid rgb(255, 255, 255);
+        }
+
+        .menu-toggle {
+            cursor: pointer;
+            margin-right: 15px;
         }
 
         .sidebar {
             width: 250px;
-            min-height: 100vh;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s;
+            padding: 20px 0;
+            transition: 0.3s;
+            position: relative;
+            min-height: calc(100vh - 60px);
         }
 
-        .sidebar.collapsed {
+        .sidebar::after {
+            content: "";
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            right: 0;
+            width: 1px;
+            background: rgb(255, 255, 255);
+        }
+
+        .sidebar.hide {
             margin-left: -250px;
         }
 
         .sidebar a {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px;
+            gap: 12px;
+            padding: 12px 20px;
             color: white;
             text-decoration: none;
-            border-radius: 10px;
         }
 
         .sidebar a:hover {
@@ -125,42 +149,40 @@
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar px-3">
-        <div class="d-flex align-items-center gap-3">
-            <button class="btn text-white" onclick="toggleSidebar()">☰</button>
-            <h1 class="mb-0 fs-4">Wizhapp</h1>
+   <div class="topbar">
+        <img src="https://img.icons8.com/ios-filled/30/ffffff/menu--v1.png" class="menu-toggle"
+            onclick="toggleSidebar()">
+        <h5 class="mb-0 fw-bold">Whizapp</h5>
+        <div class="ms-auto">
+            <img src="icons/Doorbell.png" width="50" height="30">
         </div>
+    </div>
 
-        <a href="#"><img src="icons/Doorbell.png" width="50" height="30"></a>
-    </nav>
+    <div class="d-flex" style="min-height: calc(100vh - 60px);">
 
-    <div class="d-flex">
-
-        <!-- SIDEBAR -->
         <div class="sidebar" id="sidebar">
-            <a href="/profile"><img src="icons/Registration.png" width="27"> My Profile</a>
-            <a href="#"><img src="icons/ListView.png" width="27"> Wishlist Board</a>
-            <a href="#" class="ps-5"><img src="icons/90px_AddShoppingCart.png" width="27"> Add</a>
-            <a href="#" class="ps-5"><img src="icons/Delete.png" width="27"> Delete</a>
-            <a href="#"><img src="icons/95px_ForwardArrow.png" width="27"> Share Wishlist</a>
-            <a href="#"><img src="icons/95px_Gift.png" width="27"> Referral</a>
-            <a href="#"><img src="icons/Member.png" width="27"> AI Integration</a>
-            <a href="#"><img src="icons/DuplicateContacts.png" width="27"> Contact Form</a>
-            <a href="#"><img src="icons/Settings.png" width="27"> Settings</a>
-            <a href="#"><img src="icons/LogoutRounded.png" width="27"> Log out</a>
+            <a href="/profile"><img src="icons/Registration.png" width="27" height="27"> My Profile</a>
+            <a href="#"><img src="icons/ListView.png" width="27" height="27"> Wishlist Board</a>
+            <a href="#" class="ps-5"><img src="icons/90px_AddShoppingCart.png" width="27" height="27"> Add</a>
+            <a href="#" class="ps-5"><img src="icons/Delete.png" width="27" height="27"> Delete</a>
+            <a href="#"><img src="icons/95px_ForwardArrow.png" width="27" height="27"> Share Wishlist</a>
+            <a href="#"><img src="icons/95px_Gift.png" width="27" height="27"> Referral</a>
+            <a href="#"><img src="icons/Member.png" width="27" height="27"> AI Integration</a>
+            <a href="#"><img src="icons/DuplicateContacts.png" width="27" height="27"> Contact Form</a>
+            <a href="#"><img src="icons/Settings.png" width="27" height="27"> Settings</a>
+            <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Log out</a>
         </div>
-
         <!-- CONTENT -->
         <div class="content p-4 w-100">
 
             <div class="mb-4">
 
                 <!-- BARIS 1 -->
-                <h2 class="mb-1">My Wishlist</h2>
+                <h2 class="mb-1 fw-bold">My Wishlist</h2>
 
                 <!-- BARIS 2 -->
                 <div class="d-flex justify-content-between align-items-center">
-                    <h2 class="mb-0">Board</h2>
+                    <h2 class="mb-0 fw-bold">Board</h2>
 
                     <div class="search-box">
                         <input type="text" placeholder="Search">
@@ -248,13 +270,7 @@
 
     <script>
         function toggleSidebar() {
-            const sidebar = document.getElementById("sidebar");
-
-            if (window.innerWidth <= 768) {
-                sidebar.classList.toggle("show");
-            } else {
-                sidebar.classList.toggle("collapsed");
-            }
+            document.getElementById("sidebar").classList.toggle("hide");
         }
     </script>
 

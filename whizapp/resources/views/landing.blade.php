@@ -33,7 +33,7 @@
             background: rgba(50, 35, 130, 0.55);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(165, 145, 145, 0.1);
         }
 
         .navbar-brand {
@@ -45,7 +45,6 @@
             gap: 10px;
         }
 
-        /* Logo placeholder tag – user will swap this img src */
         .navbar-logo {
             width: 38px;
             height: 38px;
@@ -80,29 +79,43 @@
 
         /* ── Hero Section ── */
         .hero {
-            padding: 100px 20px 60px;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
+            padding: 120px 20px 80px;
+            box-sizing: border-box;
         }
 
         .hero h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 800;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             line-height: 1.2;
         }
 
         .hero p {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             opacity: 0.9;
             margin: 0 auto;
-            max-width: 380px;
-            line-height: 1.6;
+            max-width: 400px;
+            line-height: 1.7;
         }
 
         /* ── Features Section ── */
         .features {
-            padding: 80px 20px 60px;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
+            padding: 80px 20px;
+            box-sizing: border-box;
         }
 
         .features h1 {
@@ -115,7 +128,7 @@
             font-size: 0.95rem;
             opacity: 0.85;
             max-width: 540px;
-            margin: 0 auto 40px;
+            margin: 0 auto 48px;
             line-height: 1.6;
         }
 
@@ -123,33 +136,34 @@
         .feature-boxes {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 24px;
             flex-wrap: wrap;
+            width: 100%;
+            max-width: 900px;
         }
 
         .feature-box {
-            width: 120px;
-            height: 120px;
+            width: 180px;
+            height: 180px;
             background: #7D74F4;
-            border-radius: 20px;
+            border-radius: 24px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 14px;
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
         }
 
         .feature-box:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.3);
         }
 
-        /* Icon placeholder – user drops in <img> or <svg> here */
         .feature-icon {
-            width: 44px;
-            height: 44px;
+            width: 64px;
+            height: 64px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -162,7 +176,7 @@
         }
 
         .feature-label {
-            font-size: 0.7rem;
+            font-size: 0.82rem;
             font-weight: 700;
             color: white;
             text-align: center;
@@ -223,7 +237,6 @@
             opacity: 0.8;
         }
 
-        /* Form label */
         .modal-body label {
             font-weight: 600;
             font-size: 0.85rem;
@@ -232,7 +245,6 @@
             text-transform: uppercase;
         }
 
-        /* Input fields */
         .modal-body .form-control {
             border-radius: 12px;
             border: none;
@@ -248,7 +260,6 @@
             box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
         }
 
-        /* Submit buttons */
         .btn-auth {
             background: #192F9D;
             color: white;
@@ -268,7 +279,6 @@
             transform: translateY(-1px);
         }
 
-        /* Close button */
         .btn-close-modal {
             position: absolute;
             top: 16px;
@@ -295,7 +305,6 @@
         <nav class="navbar fixed-top">
             <div class="container-fluid px-4">
 
-                <!-- Brand: Logo + Name -->
                 <a class="navbar-brand" href="#">
                     <div class="navbar-logo">
                         <img id="navbar-logo-img" src="logo/logo.png" alt="Logo" />
@@ -303,7 +312,6 @@
                     Whizapp
                 </a>
 
-                <!-- Nav links -->
                 <div class="d-flex gap-1">
                     <button class="btn-nav" data-bs-toggle="modal" data-bs-target="#signInModal">
                         Sign in
@@ -376,7 +384,7 @@
 
     <!-- ══════════════ FOOTER ══════════════ -->
     <footer class="text-black">
-        Made with ❤ by @SANA
+        Made with 🤍 by @SANA
     </footer>
 
 
@@ -465,24 +473,18 @@
         const signInModal = new bootstrap.Modal(document.getElementById('signInModal'));
         const signUpModal = new bootstrap.Modal(document.getElementById('signUpModal'));
 
-        // "Sign up now." in Sign In modal → open Sign Up
         document.getElementById('goToSignUp').addEventListener('click', () => {
             signInModal.hide();
             document.getElementById('signInModal').addEventListener('hidden.bs.modal', () => {
                 signUpModal.show();
-            }, {
-                once: true
-            });
+            }, { once: true });
         });
 
-        // "Sign in." in Sign Up modal → open Sign In
         document.getElementById('goToSignIn').addEventListener('click', () => {
             signUpModal.hide();
             document.getElementById('signUpModal').addEventListener('hidden.bs.modal', () => {
                 signInModal.show();
-            }, {
-                once: true
-            });
+            }, { once: true });
         });
     </script>
 

@@ -9,6 +9,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="logo/logo.png" rel="icon" type="image/png">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+        * {
+            font-family: 'Nunito', sans-serif;
+        }
+
         body {
             background: linear-gradient(180deg,
                     rgba(63, 43, 150, 1) 0%,
@@ -24,7 +30,7 @@
             display: flex;
             align-items: center;
             padding: 0 20px;
-            border-bottom: 1px solid rgb(0, 0, 0);
+            border-bottom: 1px solid rgb(255, 255, 255);
         }
 
         .menu-toggle {
@@ -47,7 +53,7 @@
             bottom: 0px;
             right: 0;
             width: 1px;
-            background: rgb(0, 0, 0);
+            background: rgb(255, 255, 255);
         }
 
         .sidebar.hide {
@@ -71,6 +77,17 @@
             flex: 1;
             padding: 20px 30px 30px 30px;
             overflow-y: auto;
+        }
+
+        /* ── Board Header ── */
+        .board-header {
+            margin-bottom: 24px;
+        }
+
+        .board-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: white;
         }
 
         /* ── Wishlist Card ── */
@@ -218,7 +235,6 @@
             cursor: pointer;
             opacity: 0.85;
             display: none;
-            /* hidden until select mode */
             transition: opacity 0.2s;
         }
 
@@ -231,7 +247,6 @@
             width: 22px;
             height: 22px;
             filter: brightness(10);
-            /* make icon white */
         }
 
         /* Checkbox on card — hidden by default */
@@ -263,7 +278,7 @@
         .footer {
             text-align: center;
             padding: 10px;
-            border-top: 1px solid rgb(0, 0, 0);
+            border-top: 1px solid rgb(255, 255, 255);
             font-size: 14px;
             color: black;
         }
@@ -301,12 +316,15 @@
         <!-- ══ CONTENT ══ -->
         <div class="content">
 
+            <!-- ── Board Header ── -->
+            <div class="board-header mt-2">
+                <h2 class="board-title">My Wishlist Board</h2>
+            </div>
+
             <!-- ── Toolbar ── -->
             <div class="content-toolbar">
                 <div class="ms-auto d-flex align-items-center gap-2">
                     <button class="btn-select" id="btnSelect" onclick="toggleSelectMode()">Select</button>
-
-                    <!-- Bulk delete — icon placeholder, isi src dengan ikon trash kamu -->
                     <button class="btn-bulk-delete" id="btnBulkDelete" onclick="deleteSelected()"
                         aria-label="Delete selected">
                         <img src="icons/Delete.png" alt="Delete selected" />
@@ -316,21 +334,13 @@
 
             <!-- ── Wishlist Card 1 ── -->
             <div class="wishlist-card" id="card-1">
-
-                <!-- Checkbox (tampil saat select mode) -->
                 <input type="checkbox" class="card-checkbox" id="chk-1" />
-
-                <!-- DELETE BUTTON — ganti src/isi tag img dengan ikon delete kamu -->
                 <button class="btn-delete" onclick="removeCard('card-1')" aria-label="Delete">
                     <img src="icons/DeleteHitam.png" alt="Delete" />
                 </button>
-
-                <!-- PRODUCT IMAGE — isi src dengan URL / path gambar produk -->
                 <div class="product-img-wrap">
                     <img src="img/produk.png" alt="Product Image" id="product-img-1" />
                 </div>
-
-                <!-- Product info -->
                 <div class="product-info">
                     <div class="product-name">Nama Produk</div>
                     <div class="product-desc">
@@ -338,8 +348,6 @@
                         Vibe: —<br>
                         Keunggulan: —
                     </div>
-
-                    <!-- Quantity control -->
                     <div class="qty-control">
                         <button class="qty-btn" onclick="changeQty('qty-1', -1)">−</button>
                         <span class="qty-value" id="qty-1">1</span>
@@ -350,18 +358,13 @@
 
             <!-- ── Wishlist Card 2 ── -->
             <div class="wishlist-card" id="card-2">
-
-                <!-- Checkbox (tampil saat select mode) -->
                 <input type="checkbox" class="card-checkbox" id="chk-2" />
-
                 <button class="btn-delete" onclick="removeCard('card-2')" aria-label="Delete">
                     <img src="icons/DeleteHitam.png" alt="Delete" />
                 </button>
-
                 <div class="product-img-wrap">
                     <img src="img/produk.png" alt="Product Image" id="product-img-2" />
                 </div>
-
                 <div class="product-info">
                     <div class="product-name">Nama Produk</div>
                     <div class="product-desc">
@@ -369,7 +372,6 @@
                         Vibe: —<br>
                         Keunggulan: —
                     </div>
-
                     <div class="qty-control">
                         <button class="qty-btn" onclick="changeQty('qty-2', -1)">−</button>
                         <span class="qty-value" id="qty-2">1</span>
@@ -398,7 +400,7 @@
             document.getElementById("sidebar").classList.toggle("hide");
         }
 
-        // Qty: minimum 1
+        // ── Qty: minimum 1 ──
         function changeQty(id, delta) {
             const el = document.getElementById(id);
             let val = parseInt(el.textContent) + delta;
@@ -406,13 +408,13 @@
             el.textContent = val;
         }
 
-        // Hapus satu card
+        // ── Hapus satu card ──
         function removeCard(id) {
             const card = document.getElementById(id);
             if (card) card.remove();
         }
 
-        // Toggle select mode
+        // ── Toggle select mode ──
         let selectMode = false;
 
         function toggleSelectMode() {
@@ -423,18 +425,16 @@
                 document.body.classList.add('select-mode');
                 btn.textContent = 'Cancel';
                 btn.classList.add('active');
-                // uncheck semua checkbox saat masuk mode
                 document.querySelectorAll('.card-checkbox').forEach(cb => cb.checked = false);
             } else {
                 document.body.classList.remove('select-mode');
                 btn.textContent = 'Select';
                 btn.classList.remove('active');
-                // uncheck semua
                 document.querySelectorAll('.card-checkbox').forEach(cb => cb.checked = false);
             }
         }
 
-        // Hapus semua card yang dicentang
+        // ── Hapus semua card yang dicentang ──
         function deleteSelected() {
             const checked = document.querySelectorAll('.card-checkbox:checked');
             if (checked.length === 0) return;
@@ -442,7 +442,6 @@
                 const card = cb.closest('.wishlist-card');
                 if (card) card.remove();
             });
-            // Kalau semua sudah terhapus, keluar dari select mode otomatis
             if (document.querySelectorAll('.wishlist-card').length === 0) {
                 toggleSelectMode();
             }

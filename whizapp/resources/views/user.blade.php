@@ -9,6 +9,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="logo/logo.png" rel="icon" type="image/png">
     <style>
+         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+        * {
+            font-family: 'Nunito', sans-serif;
+        }
         body {
             background: linear-gradient(180deg,
                     rgba(63, 43, 150, 1) 0%,
@@ -24,7 +29,7 @@
             display: flex;
             align-items: center;
             padding: 0 20px;
-            border-bottom: 1px solid rgb(0, 0, 0);
+            border-bottom: 1px solid rgb(255, 255, 255);
         }
 
         .menu-toggle {
@@ -47,7 +52,7 @@
             bottom: 0px;
             right: 0;
             width: 1px;
-            background: rgb(0, 0, 0);
+            background: rgb(255, 255, 255);
         }
 
         .sidebar.hide {
@@ -86,7 +91,7 @@
         .footer {
             text-align: center;
             padding: 10px;
-            border-top: 1px solid rgb(0, 0, 0);
+            border-top: 1px solid rgb(255, 255, 255);
             font-size: 14px;
         }
     </style>
@@ -97,7 +102,7 @@
     <div class="topbar">
         <img src="https://img.icons8.com/ios-filled/30/ffffff/menu--v1.png" class="menu-toggle"
             onclick="toggleSidebar()">
-        <h5 class="mb-0">Whizapp</h5>
+        <h5 class="mb-0 fw-bold">Whizapp</h5>
         <div class="ms-auto">
             <img src="icons/Doorbell.png" width="50" height="30">
         </div>
@@ -118,7 +123,7 @@
             <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Log out</a>
         </div>
 
-        <div class="content">
+        <div class="content mt-4">
             <div class="row mb-4">
                 <div class="col-md-2 text-center">
                     <input type="file" id="upload" hidden onchange="previewImage(event)">
@@ -128,8 +133,8 @@
                         onclick="document.getElementById('upload').click()">
                 </div>
 
-                <div class="col-md-10 d-flex flex-column justify-content-center ps-5">
-                    <h4>Alinika Prisella Maheswari</h4>
+                <div class="col-md-10 d-flex flex-column justify-content-center ps-5 ">
+                    <h3 class="fw-bold">Alinika Prisella Maheswari</h3>
                     <p class="text-light">alinika_sella@gmail.com</p>
                 </div>
             </div>
