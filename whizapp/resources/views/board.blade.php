@@ -310,7 +310,7 @@
             <a href="#"><img src="icons/Member.png" width="27" height="27"> AI Integration</a>
             <a href="#"><img src="icons/DuplicateContacts.png" width="27" height="27"> Contact Form</a>
             <a href="#"><img src="icons/Settings.png" width="27" height="27"> Settings</a>
-            <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Log out</a>
+            <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Sign out</a>
         </div>
 
         <!-- ══ CONTENT ══ -->
