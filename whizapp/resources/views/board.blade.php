@@ -1,3 +1,4 @@
+@auth
 <!DOCTYPE html>
 <html lang="id">
 
@@ -301,8 +302,8 @@
 
         <!-- ══ SIDEBAR ══ -->
         <div class="sidebar" id="sidebar">
-            <a href="/profile"><img src="icons/Registration.png" width="27" height="27"> My Profile</a>
-            <a href="#"><img src="icons/ListView.png" width="27" height="27"> Wishlist Board</a>
+            <a href="{{ route('profile') }}"><img src="icons/Registration.png" width="27" height="27"> My Profile</a>
+            <a href="{{ route('dashboard') }}"><img src="icons/ListView.png" width="27" height="27"> Wishlist Board</a>
             <a href="#" class="ps-5"><img src="icons/90px_AddShoppingCart.png" width="27" height="27"> Add</a>
             <a href="#" class="ps-5"><img src="icons/Delete.png" width="27" height="27"> Delete</a>
             <a href="#"><img src="icons/95px_ForwardArrow.png" width="27" height="27"> Share Wishlist</a>
@@ -310,16 +311,40 @@
             <a href="#"><img src="icons/Member.png" width="27" height="27"> AI Integration</a>
             <a href="#"><img src="icons/DuplicateContacts.png" width="27" height="27"> Contact Form</a>
             <a href="#"><img src="icons/Settings.png" width="27" height="27"> Settings</a>
-            <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Sign out</a>
+            <form method="POST" action="{{ route('logout') }}" style="width: 100%;">
+                @csrf
+                <button type="submit" style="background:none;border:none;display:flex;align-items:center;gap:12px;padding:12px 20px;color:white;width:100%;">
+                    <img src="icons/LogoutRounded.png" width="27" height="27"> Sign out
+                </button>
+            </form>
         </div>
 
-        <!-- ══ CONTENT ══ -->
+        <!-- ══ CONTENT ══ -->{{ $board->name }}
         <div class="content">
 
             <!-- ── Board Header ── -->
             <div class="board-header mt-2">
-                <h2 class="board-title">My Wishlist Board</h2>
+                <h2 class="board-title">{{ $board->name }}</h2>
             </div>
+
+            <!-- ── Share Link ── -->
+            @unless($readOnly ?? false)
+            <div class="mb-3">
+                @if($board->share_token)
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span class="text-white-50 small">Share link:</span>
+                        <input type="text" readonly value="{{ url('/shared/' . $board->share_token) }}"
+                            class="form-control form-control-sm w-auto" style="min-width:300px;">
+                    </div>
+                @endif
+                <form action="{{ route('boards.share', $board) }}" method="POST" class="mt-2">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-light btn-sm">
+                        {{ $board->share_token ? 'Regenerate Share Link' : 'Generate Share Link' }}
+                    </button>
+                </form>
+            </div>
+            @endunless
 
             <!-- ── Toolbar ── -->
             <div class="content-toolbar">
@@ -327,59 +352,62 @@
                     <button class="btn-select" id="btnSelect" onclick="toggleSelectMode()">Select</button>
                     <button class="btn-bulk-delete" id="btnBulkDelete" onclick="deleteSelected()"
                         aria-label="Delete selected">
-                        <img src="icons/Delete.png" alt="Delete selected" />
+                    Add Item Form ── -->
+            @unless($readOnly ?? false)
+            <form action="{{ route('items.store', $board) }}" method="POST" class="mb-4">
+                @csrf
+                <div class="d-flex gap-2 flex-wrap">
+                    <input type="url" name="item_url" id="item_url" class="form-control" placeholder="Paste product link here" required>
+                    <input type="hidden" name="title" id="title">
+                    <input type="hidden" name="price" id="price">
+                    <input type="hidden" name="image_url" id="image_url">
+                    <input type="hidden" name="source" id="source">
+                    <button type="submit" class="btn btn-light fw-bold">Add Item</button>
+                </div>
+            </form>
+            @endunless
+
+            <!-- ── Wishlist Items ── -->
+            @forelse($items as $item)
+            <div class="wishlist-card" id="card-{{ $item->id }}">
+                <input type="checkbox" class="card-checkbox" id="chk-{{ $item->id }}" />
+                @unless($readOnly ?? false)
+                <form action="{{ route('items.destroy', $item) }}" method="POST" class="btn-delete">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" style="background:none;border:none;padding:0;" aria-label="Delete">
+                        <img src="{{ asset('icons/DeleteHitam.png') }}" alt="Delete" width="20" height="20"/>
                     </button>
-                </div>
-            </div>
-
-            <!-- ── Wishlist Card 1 ── -->
-            <div class="wishlist-card" id="card-1">
-                <input type="checkbox" class="card-checkbox" id="chk-1" />
-                <button class="btn-delete" onclick="removeCard('card-1')" aria-label="Delete">
-                    <img src="icons/DeleteHitam.png" alt="Delete" />
-                </button>
+                </form>
+                @endunless
                 <div class="product-img-wrap">
-                    <img src="img/produk.png" alt="Product Image" id="product-img-1" />
+                    @if($item->image_url)
+                        <img src="{{ $item->image_url }}" alt="{{ $item->title }}">
+                    @endif
                 </div>
                 <div class="product-info">
-                    <div class="product-name">Nama Produk</div>
+                    <div class="product-name">{{ $item->title }}</div>
                     <div class="product-desc">
-                        Deskripsi produk ada di sini.<br>
-                        Vibe: —<br>
-                        Keunggulan: —
+                        Source: {{ $item->source ?? '—' }}<br>
+                        Price: Rp {{ number_format($item->price, 0, ',', '.') }}
                     </div>
                     <div class="qty-control">
-                        <button class="qty-btn" onclick="changeQty('qty-1', -1)">−</button>
-                        <span class="qty-value" id="qty-1">1</span>
-                        <button class="qty-btn" onclick="changeQty('qty-1', 1)">+</button>
+                        <button class="qty-btn" onclick="changeQty('qty-{{ $item->id }}', -1)">−</button>
+                        <span class="qty-value" id="qty-{{ $item->id }}">1</span>
+                        <button class="qty-btn" onclick="changeQty('qty-{{ $item->id }}', 1)">+</button>
                     </div>
                 </div>
             </div>
+            @empty
+            <p class="text-white">No items in this board yet.</p>
+            @endforelse
 
-            <!-- ── Wishlist Card 2 ── -->
-            <div class="wishlist-card" id="card-2">
-                <input type="checkbox" class="card-checkbox" id="chk-2" />
-                <button class="btn-delete" onclick="removeCard('card-2')" aria-label="Delete">
-                    <img src="icons/DeleteHitam.png" alt="Delete" />
-                </button>
-                <div class="product-img-wrap">
-                    <img src="img/produk.png" alt="Product Image" id="product-img-2" />
-                </div>
-                <div class="product-info">
-                    <div class="product-name">Nama Produk</div>
-                    <div class="product-desc">
-                        Deskripsi produk ada di sini.<br>
-                        Vibe: —<br>
-                        Keunggulan: —
-                    </div>
-                    <div class="qty-control">
-                        <button class="qty-btn" onclick="changeQty('qty-2', -1)">−</button>
-                        <span class="qty-value" id="qty-2">1</span>
-                        <button class="qty-btn" onclick="changeQty('qty-2', 1)">+</button>
-                    </div>
-                </div>
+            <!-- ── Total Amount ── -->
+            @unless($readOnly ?? false)
+            <div class="mt-4 fw-bold fs-5">
+                Total: Rp {{ number_format($items->sum('price'), 0, ',', '.') }}
             </div>
-
+            @endunless
             <!--
           ══ TAMBAH CARD BARU ══
           Untuk menambah item wishlist baru, copy blok .wishlist-card di atas,
@@ -442,7 +470,33 @@
                 const card = cb.closest('.wishlist-card');
                 if (card) card.remove();
             });
-            if (document.querySelectorAll('.wishlist-card').length === 0) {
+
+
+        // ── Autofill on paste ──
+        document.getElementById('item_url')?.addEventListener('paste', function(e) {
+            setTimeout(async () => {
+
+@else
+    {{ redirect()->route('login') }}
+@endauth         const url = e.target.value;
+                if (!url) return;
+                const res = await fetch('{{ route("prefetch") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ url })
+                });
+                const data = await res.json();
+                if (!data.error) {
+                    document.getElementById('title').value = data.title || '';
+                    document.getElementById('price').value = data.price || '';
+                    document.getElementById('image_url').value = data.image_url || '';
+                    document.getElementById('source').value = data.source || '';
+                }
+            }, 100);
+        });   if (document.querySelectorAll('.wishlist-card').length === 0) {
                 toggleSelectMode();
             }
         }

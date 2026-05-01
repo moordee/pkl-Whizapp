@@ -400,20 +400,25 @@
                 </div>
 
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="signInUsername">Username</label>
-                        <input type="text" class="form-control" id="signInUsername" placeholder="Username" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="signInEmail">E-Mail</label>
-                        <input type="email" class="form-control" id="signInEmail" placeholder="E-Mail" />
-                    </div>
-                    <div class="mb-4">
-                        <label for="signInPassword">Password</label>
-                        <input type="password" class="form-control" id="signInPassword" placeholder="Password" />
-                    </div>
+                    <form action="{{ route('login') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="signInEmail">E-Mail</label>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="signInEmail" name="email" placeholder="E-Mail" value="{{ old('email') }}" required />
+                            @error('email')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-4">
+                            <label for="signInPassword">Password</label>
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="signInPassword" name="password" placeholder="Password" required />
+                            @error('password')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                    <button class="btn-auth">SIGN IN</button>
+                        <button type="submit" class="btn-auth">SIGN IN</button>
+                    </form>
                 </div>
 
                 <div class="modal-footer" style="color: black;">
@@ -438,20 +443,36 @@
                 </div>
 
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="signUpUsername">USERNAME</label>
-                        <input type="text" class="form-control" id="signUpUsername" placeholder="Username" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="signUpEmail">EMAIL</label>
-                        <input type="email" class="form-control" id="signUpEmail" placeholder="E-Mail" />
-                    </div>
-                    <div class="mb-4">
-                        <label for="signUpPassword">PASSWORD</label>
-                        <input type="password" class="form-control" id="signUpPassword" placeholder="Password" />
-                    </div>
+                    <form action="{{ route('register') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="signUpName">FULL NAME</label>
+                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="signUpName" name="name" placeholder="Full Name" value="{{ old('name') }}" required />
+                            @error('name')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="signUpEmail">EMAIL</label>
+                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="signUpEmail" name="email" placeholder="E-Mail" value="{{ old('email') }}" required />
+                            @error('email')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-3">
+                            <label for="signUpPassword">PASSWORD</label>
+                            <input type="password" class="form-control @error('password') is-invalid @enderror" id="signUpPassword" name="password" placeholder="Password" required />
+                            @error('password')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="mb-4">
+                            <label for="signUpPasswordConfirmation">CONFIRM PASSWORD</label>
+                            <input type="password" class="form-control" id="signUpPasswordConfirmation" name="password_confirmation" placeholder="Confirm Password" required />
+                        </div>
 
-                    <button class="btn-auth">SIGN UP</button>
+                        <button type="submit" class="btn-auth">SIGN UP</button>
+                    </form>
                 </div>
 
                 <div class="modal-footer" style="color: black;">

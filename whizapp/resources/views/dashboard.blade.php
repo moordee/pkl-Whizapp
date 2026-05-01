@@ -1,279 +1,145 @@
-<!doctype html>
-<html lang="en" data-bs-theme="light">
-
+@auth
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Whizapp: Dashboard</title>
-
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="logo/logo.png" rel="icon" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Whizapp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-          @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
-
-        * {
-            font-family: 'Nunito', sans-serif;
-        }
         body {
-            background: linear-gradient(180deg,
-                    rgba(63, 43, 150, 1) 0%,
-                    rgba(100, 100, 200, 1) 40%,
-                    rgba(168, 192, 255, 1) 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
+            background: #1a1a1a;
             color: white;
         }
-
-              .topbar {
-            height: 60px;
+        .sidebar {
+            background: #2a2a2a;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .search-box {
             display: flex;
             align-items: center;
-            padding: 0 20px;
-            border-bottom: 1px solid rgb(255, 255, 255);
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 8px 12px;
+            gap: 10px;
         }
-
-        .menu-toggle {
+        .search-box input {
+            background: #3a3a3a;
+            border: none;
+            color: white;
+            outline: none;
+        }
+        .search-box input::placeholder {
+            color: #888;
+        }
+        .search-box img {
+            width: 20px;
+            height: 20px;
+        }
+        .card-item {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 12px;
             cursor: pointer;
-            margin-right: 15px;
+            transition: all 0.3s ease;
         }
-
-        .sidebar {
-            width: 250px;
-            padding: 20px 0;
-            transition: 0.3s;
-            position: relative;
-            min-height: calc(100vh - 60px);
+        .card-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(255, 255, 255, 0.1);
         }
-
-        .sidebar::after {
-            content: "";
-            position: absolute;
-            top: 0px;
-            bottom: 0px;
-            right: 0;
-            width: 1px;
-            background: rgb(255, 255, 255);
+        .img-placeholder {
+            background: #1a1a1a;
+            border-radius: 8px;
+            min-height: 120px;
+            align-content: flex-start;
         }
-
-        .sidebar.hide {
-            margin-left: -250px;
+        .img-placeholder img {
+            object-fit: cover;
         }
-
         .sidebar a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 20px;
-            color: white;
-            text-decoration: none;
         }
-
         .sidebar a:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: #3a3a3a;
         }
-
-        .card-item {
-            background: #f2f2f2;
-            color: #333;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .img-placeholder {
-            height: 120px;
-            background: #ddd;
-            border-radius: 10px;
-        }
-
-        .content {
-            flex-grow: 1;
-        }
-
-        footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            text-align: center;
-            padding: 20px;
-            color: #eee;
-        }
-
-        /* SEARCH STYLE */
-        .search-box {
-            position: relative;
-            width: 600px;
-            margin-top: -10px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 10px 40px 10px 15px;
-            border-radius: 10px;
-            border: none;
-            outline: none;
-            background: #e6e6e6;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .search-box img {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                z-index: 1050;
-                background: rgba(63, 43, 150, 0.95);
-                height: 100%;
-                left: -250px;
-            }
-
-            .sidebar.show {
-                left: 0;
-            }
-
-            .search-box {
-                width: 180px;
-                /* lebih kecil di HP */
-            }
+        .sidebar a img {
+            width: 27px;
+            height: 27px;
         }
     </style>
 </head>
-
 <body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-12 col-md-2 sidebar">
+                <a href="{{ route('dashboard') }}">
+                    <img src="icons/GridRounded.png" width="27" height="27"> Wishlist Board
+                </a>
+                <a href="{{ route('profile') }}">
+                    <img src="icons/ProfileRounded.png" width="27" height="27"> Profile
+                </a>
+                <a href="{{ route('dashboard') }}">
+                    <img src="icons/DarkModeRounded.png" width="27" height="27"> Dark Mode
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" style="background:none;border:none;display:flex;align-items:center;gap:12px;padding:12px 20px;color:white;width:100%;">
+                        <img src="icons/LogoutRounded.png" width="27" height="27"> Sign out
+                    </button>
+                </form>
+            </div>
 
-    <!-- NAVBAR -->
-   <div class="topbar">
-        <img src="https://img.icons8.com/ios-filled/30/ffffff/menu--v1.png" class="menu-toggle"
-            onclick="toggleSidebar()">
-        <h5 class="mb-0 fw-bold">Whizapp</h5>
-        <div class="ms-auto">
-            <img src="icons/Doorbell.png" width="50" height="30">
-        </div>
-    </div>
-
-    <div class="d-flex" style="min-height: calc(100vh - 60px);">
-
-        <div class="sidebar" id="sidebar">
-            <a href="/profile"><img src="icons/Registration.png" width="27" height="27"> My Profile</a>
-            <a href="#"><img src="icons/ListView.png" width="27" height="27"> Wishlist Board</a>
-            <a href="#" class="ps-5"><img src="icons/90px_AddShoppingCart.png" width="27" height="27"> Add</a>
-            <a href="#" class="ps-5"><img src="icons/Delete.png" width="27" height="27"> Delete</a>
-            <a href="#"><img src="icons/95px_ForwardArrow.png" width="27" height="27"> Share Wishlist</a>
-            <a href="#"><img src="icons/95px_Gift.png" width="27" height="27"> Referral</a>
-            <a href="#"><img src="icons/Member.png" width="27" height="27"> AI Integration</a>
-            <a href="#"><img src="icons/DuplicateContacts.png" width="27" height="27"> Contact Form</a>
-            <a href="#"><img src="icons/Settings.png" width="27" height="27"> Settings</a>
-            <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Sign out</a>
-        </div>
-        <!-- CONTENT -->
-        <div class="content p-4 w-100">
-
-            <div class="mb-4">
-
-                <!-- BARIS 1 -->
-                <h2 class="mb-1 fw-bold">My Wishlist</h2>
-
-                <!-- BARIS 2 -->
-                <div class="d-flex justify-content-between align-items-center">
+            <!-- Main Content -->
+            <div class="col-12 col-md-10 p-4">
+                <div class="mb-4">
+                    <h2 class="mb-1 fw-bold">My Wishlist</h2>
                     <h2 class="mb-0 fw-bold">Board</h2>
-
-                    <div class="search-box">
-                        <input type="text" placeholder="Search">
-                        <img src="https://img.icons8.com/ios-filled/50/search.png">
-                    </div>
                 </div>
 
+                <form action="{{ route('boards.search') }}" method="GET" class="search-box mb-4">
+                    <input type="text" name="query" placeholder="Search" value="{{ $query ?? '' }}">
+                    <img src="https://img.icons8.com/ios-filled/50/search.png">
+                </form>
+
+                <form action="{{ route('boards.store') }}" method="POST" class="mb-3 d-flex gap-2">
+                    @csrf
+                    <input type="text" name="name" class="form-control w-auto" placeholder="New board name" required>
+                    <button type="submit" class="btn btn-light fw-bold">+ Create</button>
+                </form>
+
+                <div class="row g-4">
+                    @forelse($boards as $board)
+                        <div class="col-6 col-md-3">
+                            <a href="{{ route('boards.show', $board->slug) }}" class="text-decoration-none text-dark">
+                                <div class="card-item">
+                                    <div class="img-placeholder d-flex flex-wrap p-1 gap-1">
+                                        @foreach($board->thumbnailImages() as $img)
+                                            <img src="{{ $img }}" style="width:48%;height:55px;object-fit:cover;border-radius:6px;">
+                                        @endforeach
+                                    </div>
+                                    <div class="small text-muted mt-2">Rp {{ number_format($board->totalAmount(), 0, ',', '.') }}</div>
+                                    <strong>{{ $board->name }}</strong>
+                                </div>
+                            </a>
+                        </div>
+                    @empty
+                        <div class="col-12 text-white">You have no boards yet. Create one to get started.</div>
+                    @endforelse
+                </div>
             </div>
-
-            <div class="row g-4">
-
-                <div class="col-6 col-md-3">
-                    <div class="card-item">
-                        <div class="img-placeholder"></div>
-                        <div class="small text-muted mt-2">Price</div>
-                        <strong>Stuff</strong>
-                    </div>
-                </div>
-
-                <div class="col-6 col-md-3">
-                    <div class="card-item">
-                        <div class="img-placeholder"></div>
-                        <div class="small text-muted mt-2">Price</div>
-                        <strong>Stuff</strong>
-                    </div>
-                </div>
-
-                <div class="col-6 col-md-3">
-                    <div class="card-item">
-                        <div class="img-placeholder"></div>
-                        <div class="small text-muted mt-2">Price</div>
-                        <strong>Stuff</strong>
-                    </div>
-                </div>
-
-                <div class="col-6 col-md-3">
-                    <div class="card-item">
-                        <div class="img-placeholder"></div>
-                        <div class="small text-muted mt-2">Price</div>
-                        <strong>Stuff</strong>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card-item">
-                        <div class="img-placeholder"></div>
-                        <div class="small text-muted mt-2">Price</div>
-                        <strong>Stuff</strong>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card-item">
-                        <div class="img-placeholder"></div>
-                        <div class="small text-muted mt-2">Price</div>
-                        <strong>Stuff</strong>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card-item">
-                        <div class="img-placeholder"></div>
-                        <div class="small text-muted mt-2">Price</div>
-                        <strong>Stuff</strong>
-                    </div>
-                </div>
-                <div class="col-6 col-md-3">
-                    <div class="card-item">
-                        <div class="img-placeholder"></div>
-                        <div class="small text-muted mt-2">Price</div>
-                        <strong>Stuff</strong>
-                    </div>
-                </div>
-
-
-
-            </div>
-
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="text-black">
-        Made with 🤍 by @SANA
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script>
-        function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("hide");
-        }
-    </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
+@else
+    {{ redirect()->route('login') }}
+@endauth

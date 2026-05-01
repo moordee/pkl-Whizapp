@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+@auth
+<!DOCTYPE html>>
 <html lang="id">
 
 <head>
@@ -111,8 +112,8 @@
     <div class="d-flex" style="min-height: calc(100vh - 60px);">
 
         <div class="sidebar" id="sidebar">
-            <a href="/profile"><img src="icons/Registration.png" width="27" height="27"> My Profile</a>
-            <a href="#"><img src="icons/ListView.png" width="27" height="27"> Wishlist Board</a>
+            <a href="{{ route('profile') }}"><img src="icons/Registration.png" width="27" height="27"> My Profile</a>
+            <a href="{{ route('dashboard') }}"><img src="icons/ListView.png" width="27" height="27"> Wishlist Board</a>
             <a href="#" class="ps-5"><img src="icons/90px_AddShoppingCart.png" width="27" height="27"> Add</a>
             <a href="#" class="ps-5"><img src="icons/Delete.png" width="27" height="27"> Delete</a>
             <a href="#"><img src="icons/95px_ForwardArrow.png" width="27" height="27"> Share Wishlist</a>
@@ -120,68 +121,82 @@
             <a href="#"><img src="icons/Member.png" width="27" height="27"> AI Integration</a>
             <a href="#"><img src="icons/DuplicateContacts.png" width="27" height="27"> Contact Form</a>
             <a href="#"><img src="icons/Settings.png" width="27" height="27"> Settings</a>
-            <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Sign out</a>
+            <form method="POST" action="{{ route('logout') }}" style="width: 100%;">
+                @csrf
+                <button type="submit" style="background:none;border:none;display:flex;align-items:center;gap:12px;padding:12px 20px;color:white;width:100%;">
+                    <img src="icons/LogoutRounded.png" width="27" height="27"> Sign out
+                </button>
+            </form>
         </div>
 
         <div class="content mt-4">
             <div class="row mb-4">
                 <div class="col-md-2 text-center">
+                    <img src="{{ $user->profile_photo_url ?? asset('img/ibu.jpg') }}" class="profile-img" id="profilePreview" onclick="document.getElementById('upload').click()">
                     <input type="file" id="upload" hidden onchange="previewImage(event)">
-
-                    <!-- DEFAULT FOTO (tidak random lagi) -->
-                    <img src="img/ibu.jpg" class="profile-img" id="profilePreview"
-                        onclick="document.getElementById('upload').click()">
                 </div>
 
                 <div class="col-md-10 d-flex flex-column justify-content-center ps-5 ">
-                    <h3 class="fw-bold">Alinika Prisella Maheswari</h3>
-                    <p class="text-light">alinika_sella@gmail.com</p>
+                    <h3 class="fw-bold">{{ $user->name }}</h3>
+                    <p class="text-light">{{ $user->email }}</p>
                 </div>
             </div>
 
-            <div class="row g-3 flex-column">
-                <div class="col-12">
-                    <label>Full Name</label>
-                    <input type="text" class="form-control" value="Alinika Prisella Maheswari">
+            <form action="{{ route('profile.update') }}" method="POST" id="profile-form" enctype="multipart/form-data">
+                @csrf
+                @method('PATCH')
+
+                <div class="row g-3 flex-column">
+                    <div class="col-12">
+                        <label>Full Name</label>
+                        <input type="text" class="form-control" value="{{ $user->name }}" name="name" required>
+                    </div>
+
+                    <div class="col-12">
+                        <label>Email</label>
+                        <input type="email" class="form-control" value="{{ $user->email }}" name="email" required>
+                    </div>
+
+                    <div class="col-12">
+                        <label>Phone Number</label>
+                        <input type="text" class="form-control" value="{{ $user->phone ?? '' }}" name="phone">
+                    </div>
+
+                    <div class="col-12">
+                        <label>Gender</label>
+                        <input type="text" class="form-control" value="{{ $user->gender ?? '' }}" name="gender">
+                    </div>
+
+                    <div class="col-12">
+                        <label>Address</label>
+                        <textarea class="form-control" rows="2" name="address">{{ $user->address ?? '' }}</textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label>New Password (leave blank to keep current)</label>
+                        <input type="password" name="password" class="form-control" placeholder="New password">
+                    </div>
+
+                    <div class="col-12">
+                        <label>Confirm Password</label>
+                        <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm new password">
+                    </div>
                 </div>
 
-                <div class="col-12">
-                    <label>Email</label>
-                    <input type="email" class="form-control" value="alinika_sella@gmail.com">
-                </div>
+           Show save button on input change
+        document.querySelectorAll('#profile-form input, #profile-form textarea').forEach(el => {
+            el.addEventListener('input', () => {
+                document.getElementById('save-btn').style.display = 'block';
+            });
+        });
+    </script>
 
-                <div class="col-12">
-                    <label>Phone Number</label>
-                    <input type="text" class="form-control" value="+62 8512-3011-9557">
-                </div>
+</body>
 
-                <div class="col-12">
-                    <label>Gender</label>
-                    <input type="text" class="form-control" value="Perempuan">
-                </div>
-
-                <div class="col-12">
-                    <label>Address</label>
-                    <textarea class="form-control" rows="2">Jl. Merdeka No. 10, Bandung, Jawa Barat, 40111</textarea>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="footer text-black" ">
-        Made with 🤍 by @SANA
-    </div>
-
-    <script>
-        function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("hide");
-        }
-
-        // PREVIEW + SIMPAN FOTO
-        function previewImage(event) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const imgData = reader.result;
+</html>
+@else
+    {{ redirect()->route('login') }}
+@endauth         const imgData = reader.result;
 
                 document.getElementById('profilePreview').src = imgData;
 
