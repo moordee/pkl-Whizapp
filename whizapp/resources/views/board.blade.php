@@ -7,7 +7,7 @@
     <title>Whizapp: Wishlist Board</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="logo/logo.png" rel="icon" type="image/png">
+    <link href="{{ asset('logo/logo.png') }}" rel="icon" type="image/png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
 
@@ -282,18 +282,52 @@
             font-size: 14px;
             color: black;
         }
+
+        body.dark-mode {
+            background: linear-gradient(180deg,
+                    rgba(10, 8, 30, 1) 0%,
+                    rgba(25, 20, 60, 1) 40%,
+                    rgba(40, 35, 80, 1) 100%);
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .wishlist-card {
+            background: rgba(30, 25, 60, 0.95);
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .product-name {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .product-desc {
+            color: #aaa;
+        }
+
+        .add-item-input::placeholder { color: #888; }
+
+        body.dark-mode .board-title {
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode .footer {
+            color: white !important;
+        }
     </style>
 </head>
 
-<body>
+<body class="{{ Auth::check() && Auth::user()->dark_mode ? 'dark-mode' : '' }}">
 
     <!-- ══ TOPBAR ══ -->
     <div class="topbar">
         <img src="https://img.icons8.com/ios-filled/30/ffffff/menu--v1.png" class="menu-toggle"
             onclick="toggleSidebar()">
-        <h5 class="mb-0">Whizapp</h5>
+        <h5 class="mb-0" style="font-family:'Nunito',sans-serif;font-weight:800;">Whizapp</h5>
         <div class="ms-auto">
-            <img src="icons/Doorbell.png" width="50" height="30">
+            <button onclick="openBellModal()"
+                    style="background:none;border:none;
+                           cursor:pointer;padding:0;">
+                <img src="{{ asset('icons/Doorbell.png') }}" width="50" height="30">
+            </button>
         </div>
     </div>
 
@@ -301,16 +335,36 @@
 
         <!-- ══ SIDEBAR ══ -->
         <div class="sidebar" id="sidebar">
-            <a href="/profile"><img src="icons/Registration.png" width="27" height="27"> My Profile</a>
-            <a href="#"><img src="icons/ListView.png" width="27" height="27"> Wishlist Board</a>
-            <a href="#" class="ps-5"><img src="icons/90px_AddShoppingCart.png" width="27" height="27"> Add</a>
-            <a href="#" class="ps-5"><img src="icons/Delete.png" width="27" height="27"> Delete</a>
-            <a href="#"><img src="icons/95px_ForwardArrow.png" width="27" height="27"> Share Wishlist</a>
-            <a href="#"><img src="icons/95px_Gift.png" width="27" height="27"> Referral</a>
-            <a href="#"><img src="icons/Member.png" width="27" height="27"> AI Integration</a>
-            <a href="#"><img src="icons/DuplicateContacts.png" width="27" height="27"> Contact Form</a>
-            <a href="#"><img src="icons/Settings.png" width="27" height="27"> Settings</a>
-            <a href="#"><img src="icons/LogoutRounded.png" width="27" height="27"> Sign out</a>
+            <a href="{{ route('profile') }}"><img src="{{ asset('icons/Registration.png') }}" width="27" height="27"> My Profile</a>
+            <a href="{{ route('dashboard') }}"><img src="{{ asset('icons/ListView.png') }}" width="27" height="27"> Wishlist Boards</a>
+            @unless($readOnly ?? false)
+            <form action="{{ route('boards.share', $board) }}"
+                  method="POST" class="m-0 p-0">
+                @csrf
+                <button type="submit"
+                        style="background:none;border:none;width:100%;
+                               display:flex;align-items:center;gap:12px;
+                               padding:12px 20px;color:white;cursor:pointer;
+                               font-family:'Nunito',sans-serif;
+                               font-size:1rem;">
+                    <img src="{{ asset('icons/95px_ForwardArrow.png') }}"
+                         width="27" height="27"> Share Board
+                </button>
+            </form>
+            @else
+            <a href="#"><img src="{{ asset('icons/95px_ForwardArrow.png') }}" width="27" height="27"> Share Board</a>
+            @endunless
+            <a href="javascript:void(0)" onclick="openComingSoon()"><img src="{{ asset('icons/95px_Gift.png') }}" width="27" height="27"> Referral</a>
+            <a href="javascript:void(0)" onclick="openComingSoon()"><img src="{{ asset('icons/Member.png') }}" width="27" height="27"> AI Assistant</a>
+            <a href="javascript:void(0)" onclick="openComingSoon()"><img src="{{ asset('icons/DuplicateContacts.png') }}" width="27" height="27"> Contact Form</a>
+            <a href="javascript:void(0)" onclick="openSettingsModal()"><img src="{{ asset('icons/Settings.png') }}" width="27" height="27"> Settings</a>
+            <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
+                @csrf
+                <button type="submit"
+                    style="background:none;border:none;width:100%;display:flex;align-items:center;gap:12px;padding:12px 20px;color:white;cursor:pointer;font-family:'Nunito',sans-serif;font-size:1rem;">
+                    <img src="{{ asset('icons/LogoutRounded.png') }}" width="27" height="27"> Sign out
+                </button>
+            </form>
         </div>
 
         <!-- ══ CONTENT ══ -->
@@ -318,73 +372,119 @@
 
             <!-- ── Board Header ── -->
             <div class="board-header mt-2">
-                <h2 class="board-title">My Wishlist Board</h2>
+                <h2 class="board-title">{{ $board->name }}</h2>
             </div>
 
+            <!-- ── Add Item Form ── -->
+            @unless($readOnly ?? false)
+                <form action="{{ route('items.store', $board) }}" method="POST" class="mb-4">
+                    @csrf
+                    <div class="d-flex gap-2 flex-wrap align-items-center">
+                        <input type="url" name="item_url" id="item_url" placeholder="Paste product link here..." required
+                            class="add-item-input"
+                            style="padding:8px 14px;border-radius:10px;border:none;
+                                  background:rgba(255,255,255,0.85);color:#333;
+                                  outline:none;flex:1;min-width:250px;">
+                        <input type="hidden" name="title" id="title">
+                        <input type="hidden" name="price" id="price">
+                        <input type="hidden" name="image_url" id="image_url">
+                        <input type="hidden" name="source" id="source">
+                        <button type="submit"
+                            style="background:rgba(255,255,255,0.25);color:white;
+                                   border:none;border-radius:10px;padding:8px 20px;
+                                   font-weight:700;cursor:pointer;">
+                            Add Item
+                        </button>
+                    </div>
+                </form>
+            @endunless
+
             <!-- ── Toolbar ── -->
+            @unless($readOnly ?? false)
             <div class="content-toolbar">
                 <div class="ms-auto d-flex align-items-center gap-2">
                     <button class="btn-select" id="btnSelect" onclick="toggleSelectMode()">Select</button>
                     <button class="btn-bulk-delete" id="btnBulkDelete" onclick="deleteSelected()"
                         aria-label="Delete selected">
-                        <img src="icons/Delete.png" alt="Delete selected" />
+                        <img src="{{ asset('icons/Delete.png') }}" alt="Delete selected" />
                     </button>
                 </div>
             </div>
+            @endunless
 
-            <!-- ── Wishlist Card 1 ── -->
-            <div class="wishlist-card" id="card-1">
-                <input type="checkbox" class="card-checkbox" id="chk-1" />
-                <button class="btn-delete" onclick="removeCard('card-1')" aria-label="Delete">
-                    <img src="icons/DeleteHitam.png" alt="Delete" />
-                </button>
-                <div class="product-img-wrap">
-                    <img src="img/produk.png" alt="Product Image" id="product-img-1" />
-                </div>
-                <div class="product-info">
-                    <div class="product-name">Nama Produk</div>
-                    <div class="product-desc">
-                        Deskripsi produk ada di sini.<br>
-                        Vibe: —<br>
-                        Keunggulan: —
+            <!-- ── Wishlist Items ── -->
+            @forelse($items as $item)
+                <div class="wishlist-card" id="card-{{ $item->id }}">
+                    <input type="checkbox" class="card-checkbox" id="chk-{{ $item->id }}" />
+                    @unless($readOnly ?? false)
+                        <form action="{{ route('items.destroy', $item) }}" method="POST"
+                            style="position:absolute;top:12px;right:14px;
+                                   background:none;border:none;padding:0;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-delete" aria-label="Delete" style="position:static;">
+                                <img src="{{ asset('icons/DeleteHitam.png') }}" alt="Delete" />
+                            </button>
+                        </form>
+                    @endunless
+                    <div class="product-img-wrap">
+                        @if($item->image_url)
+                            <img src="{{ $item->image_url }}" alt="{{ $item->title }}">
+                        @endif
                     </div>
-                    <div class="qty-control">
-                        <button class="qty-btn" onclick="changeQty('qty-1', -1)">−</button>
-                        <span class="qty-value" id="qty-1">1</span>
-                        <button class="qty-btn" onclick="changeQty('qty-1', 1)">+</button>
+                    <div class="product-info">
+                        <div class="product-name">{{ $item->title }}</div>
+                        <div class="product-desc">
+                            Source: {{ $item->source ?? '—' }}<br>
+                            Price: Rp {{ number_format($item->price ?? 0, 0, ',', '.') }}
+                        </div>
+                        <div class="qty-control">
+                            <button class="qty-btn" onclick="changeQty('qty-{{ $item->id }}', -1)">−</button>
+                            <span class="qty-value" id="qty-{{ $item->id }}">1</span>
+                            <button class="qty-btn" onclick="changeQty('qty-{{ $item->id }}', 1)">+</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            @empty
+                <p class="text-white opacity-75">
+                    No items yet. Paste a product link above to get started.
+                </p>
+            @endforelse
 
-            <!-- ── Wishlist Card 2 ── -->
-            <div class="wishlist-card" id="card-2">
-                <input type="checkbox" class="card-checkbox" id="chk-2" />
-                <button class="btn-delete" onclick="removeCard('card-2')" aria-label="Delete">
-                    <img src="icons/DeleteHitam.png" alt="Delete" />
-                </button>
-                <div class="product-img-wrap">
-                    <img src="img/produk.png" alt="Product Image" id="product-img-2" />
-                </div>
-                <div class="product-info">
-                    <div class="product-name">Nama Produk</div>
-                    <div class="product-desc">
-                        Deskripsi produk ada di sini.<br>
-                        Vibe: —<br>
-                        Keunggulan: —
+            <!-- ── Total Amount & Share Link ── -->
+            @unless($readOnly ?? false)
+                <div class="mt-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div style="background:rgba(255,255,255,0.15);
+                                border-radius:12px;padding:12px 20px;">
+                        <span style="font-size:0.85rem;opacity:0.8;">Total</span><br>
+                        <strong style="font-size:1.3rem;">
+                            Rp {{ number_format($items->sum('price'), 0, ',', '.') }}
+                        </strong>
                     </div>
-                    <div class="qty-control">
-                        <button class="qty-btn" onclick="changeQty('qty-2', -1)">−</button>
-                        <span class="qty-value" id="qty-2">1</span>
-                        <button class="qty-btn" onclick="changeQty('qty-2', 1)">+</button>
+                    <div>
+                        @if($board->share_token)
+                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                <span style="font-size:0.85rem;opacity:0.8;">Share link:</span>
+                                <input type="text" readonly value="{{ url('/shared/'.$board->share_token) }}"
+                                    style="background:rgba(255,255,255,0.2);
+                                           border:none;border-radius:8px;
+                                           padding:5px 10px;color:white;
+                                           font-size:0.85rem;min-width:280px;">
+                            </div>
+                        @endif
+                        <form action="{{ route('boards.share', $board) }}" method="POST">
+                            @csrf
+                            <button type="submit"
+                                style="background:rgba(255,255,255,0.2);
+                                       color:white;border:none;border-radius:10px;
+                                       padding:7px 18px;font-weight:600;cursor:pointer;
+                                       font-size:0.9rem;">
+                                {{ $board->share_token ? 'Regenerate Share Link' : 'Generate Share Link' }}
+                            </button>
+                        </form>
                     </div>
                 </div>
-            </div>
-
-            <!--
-          ══ TAMBAH CARD BARU ══
-          Untuk menambah item wishlist baru, copy blok .wishlist-card di atas,
-          ganti id card (misal card-3), id qty (qty-3), dan isi src gambar + teks produk.
-        -->
+            @endunless
 
         </div><!-- /content -->
     </div>
@@ -395,6 +495,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         function toggleSidebar() {
             document.getElementById("sidebar").classList.toggle("hide");
@@ -446,8 +547,147 @@
                 toggleSelectMode();
             }
         }
+
+        function openBellModal() {
+            document.getElementById('bellModal')
+                .style.display = 'flex';
+        }
+        function closeBellModal() {
+            document.getElementById('bellModal')
+                .style.display = 'none';
+        }
+        function openComingSoon() {
+            document.getElementById('comingSoonModal')
+                .style.display = 'flex';
+        }
+        function closeComingSoon() {
+            document.getElementById('comingSoonModal')
+                .style.display = 'none';
+        }
+        function openSettingsModal() {
+            document.getElementById('settingsModal')
+                .style.display = 'flex';
+        }
+        function closeSettingsModal() {
+            document.getElementById('settingsModal')
+                .style.display = 'none';
+        }
+
+        document.getElementById('item_url')?.addEventListener('paste', function(e) {
+            setTimeout(async () => {
+                const url = e.target.value;
+                if (!url) return;
+                const res = await fetch('{{ route("prefetch") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ url })
+                });
+                const data = await res.json();
+                if (!data.error) {
+                    document.getElementById('title').value = data.title || '';
+                    document.getElementById('price').value = data.price || '';
+                    document.getElementById('image_url').value = data.image_url || '';
+                    document.getElementById('source').value = data.source || '';
+                }
+            }, 100);
+        });
     </script>
+
+    <!-- Bell Modal -->
+    <div id="bellModal"
+         style="display:none;position:fixed;top:0;left:0;
+                width:100%;height:100%;
+                background:rgba(0,0,0,0.4);z-index:9999;
+                align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:16px;
+                    padding:32px 28px;min-width:280px;
+                    text-align:center;color:#333;">
+            <div style="font-size:2rem;margin-bottom:12px;">🔔</div>
+            <h5 class="fw-bold">Nothing to see...yet.</h5>
+            <p style="color:#888;font-size:0.9rem;
+                      margin:8px 0 20px;">
+                You have no notifications right now.
+            </p>
+            <button onclick="closeBellModal()"
+                    style="background:#3d2fa0;color:white;
+                           border:none;border-radius:8px;
+                           padding:8px 24px;font-weight:600;
+                           cursor:pointer;">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <!-- Coming Soon Modal -->
+    <div id="comingSoonModal"
+         style="display:none;position:fixed;top:0;left:0;
+                width:100%;height:100%;
+                background:rgba(0,0,0,0.4);z-index:9999;
+                align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:16px;
+                    padding:32px 28px;min-width:280px;
+                    text-align:center;color:#333;">
+            <div style="font-size:2rem;margin-bottom:12px;">🚧</div>
+            <h5 class="fw-bold">Coming soon</h5>
+            <p style="color:#888;font-size:0.9rem;
+                      margin:8px 0 20px;">
+                This feature is still in development. Stay tuned!
+            </p>
+            <button onclick="closeComingSoon()"
+                    style="background:#3d2fa0;color:white;
+                           border:none;border-radius:8px;
+                           padding:8px 24px;font-weight:600;
+                           cursor:pointer;">
+                Got it
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal"
+         style="display:none;position:fixed;top:0;left:0;
+                width:100%;height:100%;
+                background:rgba(0,0,0,0.4);z-index:9999;
+                align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:16px;
+                    padding:28px;min-width:320px;color:#333;">
+            <h5 class="fw-bold mb-4">⚙️ Settings</h5>
+            <div style="display:flex;align-items:center;
+                        justify-content:space-between;
+                        background:#f5f5f5;border-radius:12px;
+                        padding:14px 18px;margin-bottom:20px;">
+                <span style="font-weight:600;">Dark Mode</span>
+                <form action="{{ route('profile.darkmode') }}"
+                      method="POST">
+                    @csrf
+                    <button type="submit"
+                        style="background:{{ Auth::user()->dark_mode
+                               ? '#6c4ee0' : '#ddd' }};
+                               color:{{ Auth::user()->dark_mode
+                               ? 'white' : '#333' }};
+                               border:none;border-radius:20px;
+                               padding:6px 20px;font-weight:600;
+                               cursor:pointer;min-width:60px;">
+                        {{ Auth::user()->dark_mode ? 'On' : 'Off' }}
+                    </button>
+                </form>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button onclick="closeSettingsModal()"
+                        style="background:#3d2fa0;color:white;
+                               border:none;border-radius:8px;
+                               padding:8px 24px;font-weight:600;
+                               cursor:pointer;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
 
 </body>
 
 </html>
+
