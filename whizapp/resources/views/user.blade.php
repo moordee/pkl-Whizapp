@@ -152,7 +152,7 @@
             <div class="row mb-4">
                 <div class="col-md-2 text-center">
                     <input type="file" id="upload" hidden onchange="previewImage(event)">
-                    <img src="{{ $user->profile_photo_path ? asset('storage/'.$user->profile_photo_path) : asset('img/defaultProfileIcon-Pixabay_StephanieEdwards.png') }}" class="profile-img" id="profilePreview"
+                    <img src="{{ $user->profile_photo_path ? asset('storage/'.$user->profile_photo_path) : asset('img/defaultByStephanieEdwards.png') }}" class="profile-img" id="profilePreview"
                         onclick="document.getElementById('upload').click()">
                 </div>
 

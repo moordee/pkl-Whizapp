@@ -78,18 +78,24 @@ class BoardController extends Controller
      */
     public function generateShareLink(Board $board)
     {
-        if ($board->user_id !== Auth::user()->id) {
+        if ($board->user_id !== Auth::id()) {
             abort(403);
         }
 
-        $board->update([
-            'share_token' => Str::random(16),
-            'is_public' => true,
-        ]);
+        if (!$board->share_token) {
+            $board->share_token = \Illuminate\Support\Str::random(16);
+            $board->is_public   = true;
+            $board->save();
+        }
 
-        $shareUrl = url('/shared/' . $board->share_token);
+        if (request()->expectsJson()) {
+            return response()->json([
+                'share_url' => url('/shared/' . $board->share_token)
+            ]);
+        }
 
-        return back()->with('share_url', $shareUrl);
+        return back()->with('share_url',
+            url('/shared/' . $board->share_token));
     }
 
     /**

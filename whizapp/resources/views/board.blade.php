@@ -304,11 +304,14 @@
             color: #aaa;
         }
 
-        .add-item-input::placeholder { color: #888; }
+        .add-item-input::placeholder {
+            color: #888;
+        }
 
         body.dark-mode .board-title {
             color: #e0e0e0 !important;
         }
+
         body.dark-mode .footer {
             color: white !important;
         }
@@ -324,7 +327,7 @@
         <h5 class="mb-0" style="font-family:'Nunito',sans-serif;font-weight:800;">Whizapp</h5>
         <div class="ms-auto">
             <button onclick="openBellModal()"
-                    style="background:none;border:none;
+                style="background:none;border:none;
                            cursor:pointer;padding:0;">
                 <img src="{{ asset('icons/Doorbell.png') }}" width="50" height="30">
             </button>
@@ -335,29 +338,36 @@
 
         <!-- ══ SIDEBAR ══ -->
         <div class="sidebar" id="sidebar">
-            <a href="{{ route('profile') }}"><img src="{{ asset('icons/Registration.png') }}" width="27" height="27"> My Profile</a>
-            <a href="{{ route('dashboard') }}"><img src="{{ asset('icons/ListView.png') }}" width="27" height="27"> Wishlist Boards</a>
+            <a href="{{ route('profile') }}"><img src="{{ asset('icons/Registration.png') }}" width="27"
+                    height="27"> My Profile</a>
+            <a href="{{ route('dashboard') }}"><img src="{{ asset('icons/ListView.png') }}" width="27"
+                    height="27"> Wishlist Boards</a>
             @unless($readOnly ?? false)
-            <form action="{{ route('boards.share', $board) }}"
-                  method="POST" class="m-0 p-0">
-                @csrf
-                <button type="submit"
-                        style="background:none;border:none;width:100%;
-                               display:flex;align-items:center;gap:12px;
-                               padding:12px 20px;color:white;cursor:pointer;
-                               font-family:'Nunito',sans-serif;
-                               font-size:1rem;">
-                    <img src="{{ asset('icons/95px_ForwardArrow.png') }}"
-                         width="27" height="27"> Share Board
-                </button>
-            </form>
+            <a href="javascript:void(0)" onclick="openShareModal()"
+               style="display:flex;align-items:center;gap:12px;
+                      padding:12px 20px;color:white;
+                      text-decoration:none;cursor:pointer;">
+                <img src="{{ asset('icons/95px_ForwardArrow.png') }}"
+                     width="27" height="27"> Share Board
+            </a>
             @else
-            <a href="#"><img src="{{ asset('icons/95px_ForwardArrow.png') }}" width="27" height="27"> Share Board</a>
+            <a href="#"
+               style="display:flex;align-items:center;gap:12px;
+                      padding:12px 20px;color:white;
+                      text-decoration:none;opacity:0.4;
+                      cursor:default;">
+                <img src="{{ asset('icons/95px_ForwardArrow.png') }}"
+                     width="27" height="27"> Share Board
+            </a>
             @endunless
-            <a href="javascript:void(0)" onclick="openComingSoon()"><img src="{{ asset('icons/95px_Gift.png') }}" width="27" height="27"> Referral</a>
-            <a href="javascript:void(0)" onclick="openComingSoon()"><img src="{{ asset('icons/Member.png') }}" width="27" height="27"> AI Assistant</a>
-            <a href="javascript:void(0)" onclick="openComingSoon()"><img src="{{ asset('icons/DuplicateContacts.png') }}" width="27" height="27"> Contact Form</a>
-            <a href="javascript:void(0)" onclick="openSettingsModal()"><img src="{{ asset('icons/Settings.png') }}" width="27" height="27"> Settings</a>
+            <a href="javascript:void(0)" onclick="openComingSoon()"><img src="{{ asset('icons/95px_Gift.png') }}"
+                    width="27" height="27"> Referral</a>
+            <a href="javascript:void(0)" onclick="openComingSoon()"><img src="{{ asset('icons/Member.png') }}"
+                    width="27" height="27"> AI Assistant</a>
+            <a href="javascript:void(0)" onclick="openComingSoon()"><img
+                    src="{{ asset('icons/DuplicateContacts.png') }}" width="27" height="27"> Contact Form</a>
+            <a href="javascript:void(0)" onclick="openSettingsModal()"><img src="{{ asset('icons/Settings.png') }}"
+                    width="27" height="27"> Settings</a>
             <form method="POST" action="{{ route('logout') }}" class="m-0 p-0">
                 @csrf
                 <button type="submit"
@@ -377,113 +387,98 @@
 
             <!-- ── Add Item Form ── -->
             @unless($readOnly ?? false)
-                <form action="{{ route('items.store', $board) }}" method="POST" class="mb-4">
+            <div style="background: rgba(255,255,255,0.12);
+                        border-radius:16px;padding:20px;
+                        margin-bottom:25px;">
+                <form action="{{ route('items.store', $board) }}" method="POST"
+                      class="mb-4">
                     @csrf
-                    <div class="d-flex gap-2 flex-wrap align-items-center">
-                        <input type="url" name="item_url" id="item_url" placeholder="Paste product link here..." required
-                            class="add-item-input"
-                            style="padding:8px 14px;border-radius:10px;border:none;
-                                  background:rgba(255,255,255,0.85);color:#333;
-                                  outline:none;flex:1;min-width:250px;">
-                        <input type="hidden" name="title" id="title">
-                        <input type="hidden" name="price" id="price">
-                        <input type="hidden" name="image_url" id="image_url">
-                        <input type="hidden" name="source" id="source">
-                        <button type="submit"
-                            style="background:rgba(255,255,255,0.25);color:white;
-                                   border:none;border-radius:10px;padding:8px 20px;
-                                   font-weight:700;cursor:pointer;">
+                    <div class="d-flex gap-2 flex-wrap align-items-center mb-2">
+                        <input type="text" name="item_url" id="item_url"
+                               placeholder="Paste product link here (optional)"
+                               class="add-item-input"
+                               style="padding:8px 14px;border-radius:10px;
+                                      border:none;
+                                      background:rgba(255,255,255,0.85);
+                                      color:#333;outline:none;flex:1;
+                                      min-width:250px;">
+                        <button type="button" id="btn-fetch"
+                                onclick="fetchProductInfo()"
+                                style="background:rgba(255,255,255,0.2);
+                                       color:white;border:none;
+                                       border-radius:10px;padding:8px 20px;
+                                       font-weight:700;cursor:pointer;">
+                            Fetch Info
+                        </button>
+                        <button type="submit" id="add-item-btn"
+                                style="background:rgba(255,255,255,0.25);
+                                       color:white;border:none;
+                                       border-radius:10px;padding:8px 20px;
+                                       font-weight:700;cursor:pointer;">
                             Add Item
                         </button>
                     </div>
+                    <div class="d-flex gap-2 flex-wrap mb-2">
+                        <input type="text" name="title" id="title"
+                               placeholder="Product name"
+                               style="padding:8px 14px;border-radius:10px;
+                                      border:none;
+                                      background:rgba(255,255,255,0.85);
+                                      color:#333;outline:none;flex:1;
+                                      min-width:250px;">
+                        <input type="number" name="price" id="price"
+                               placeholder="Price (Rp)"
+                               step="0.01" min="0"
+                               style="padding:8px 14px;border-radius:10px;
+                                      border:none;
+                                      background:rgba(255,255,255,0.85);
+                                      color:#333;outline:none;width:160px;">
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap mb-2">
+                        <input type="text" name="item_type" id="item_type"
+                               placeholder="Item type (e.g. Clothing, Electronics)"
+                               style="padding:8px 14px;border-radius:10px;
+                                      border:none;
+                                      background:rgba(255,255,255,0.85);
+                                      color:#333;outline:none;flex:1;
+                                      min-width:250px;">
+                        <input type="text" name="source" id="source"
+                               placeholder="Source (e.g. Shopee, Amazon)"
+                               style="padding:8px 14px;border-radius:10px;
+                                      border:none;
+                                      background:rgba(255,255,255,0.85);
+                                      color:#333;outline:none;width:200px;">
+                    </div>
+                    <textarea name="notes" id="notes" rows="2"
+                              placeholder="Additional notes (optional)"
+                              style="padding:8px 14px;border-radius:10px;
+                                     border:none;
+                                     background:rgba(255,255,255,0.85);
+                                     color:#333;outline:none;width:100%;
+                                     margin-bottom:8px;resize:vertical;">
+                    </textarea>
+                    <input type="hidden" name="image_url" id="image_url">
+                    <div id="prefetch-status"
+                         style="font-size:0.8rem;color:rgba(255,255,255,0.7);
+                                margin-top:4px;min-height:18px;"></div>
                 </form>
-            @endunless
-
-            <!-- ── Toolbar ── -->
-            @unless($readOnly ?? false)
-            <div class="content-toolbar">
-                <div class="ms-auto d-flex align-items-center gap-2">
-                    <button class="btn-select" id="btnSelect" onclick="toggleSelectMode()">Select</button>
-                    <button class="btn-bulk-delete" id="btnBulkDelete" onclick="deleteSelected()"
-                        aria-label="Delete selected">
-                        <img src="{{ asset('icons/Delete.png') }}" alt="Delete selected" />
-                    </button>
-                </div>
             </div>
             @endunless
-
-            <!-- ── Wishlist Items ── -->
-            @forelse($items as $item)
-                <div class="wishlist-card" id="card-{{ $item->id }}">
-                    <input type="checkbox" class="card-checkbox" id="chk-{{ $item->id }}" />
-                    @unless($readOnly ?? false)
-                        <form action="{{ route('items.destroy', $item) }}" method="POST"
-                            style="position:absolute;top:12px;right:14px;
-                                   background:none;border:none;padding:0;">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn-delete" aria-label="Delete" style="position:static;">
-                                <img src="{{ asset('icons/DeleteHitam.png') }}" alt="Delete" />
-                            </button>
-                        </form>
-                    @endunless
-                    <div class="product-img-wrap">
-                        @if($item->image_url)
-                            <img src="{{ $item->image_url }}" alt="{{ $item->title }}">
-                        @endif
-                    </div>
-                    <div class="product-info">
-                        <div class="product-name">{{ $item->title }}</div>
-                        <div class="product-desc">
-                            Source: {{ $item->source ?? '—' }}<br>
-                            Price: Rp {{ number_format($item->price ?? 0, 0, ',', '.') }}
-                        </div>
-                        <div class="qty-control">
-                            <button class="qty-btn" onclick="changeQty('qty-{{ $item->id }}', -1)">−</button>
-                            <span class="qty-value" id="qty-{{ $item->id }}">1</span>
-                            <button class="qty-btn" onclick="changeQty('qty-{{ $item->id }}', 1)">+</button>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <p class="text-white opacity-75">
-                    No items yet. Paste a product link above to get started.
-                </p>
-            @endforelse
-
-            <!-- ── Total Amount & Share Link ── -->
+            <!-- ── Total Amount ── -->
             @unless($readOnly ?? false)
-                <div class="mt-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <div style="background:rgba(255,255,255,0.15);
-                                border-radius:12px;padding:12px 20px;">
-                        <span style="font-size:0.85rem;opacity:0.8;">Total</span><br>
-                        <strong style="font-size:1.3rem;">
-                            Rp {{ number_format($items->sum('price'), 0, ',', '.') }}
-                        </strong>
-                    </div>
-                    <div>
-                        @if($board->share_token)
-                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
-                                <span style="font-size:0.85rem;opacity:0.8;">Share link:</span>
-                                <input type="text" readonly value="{{ url('/shared/'.$board->share_token) }}"
-                                    style="background:rgba(255,255,255,0.2);
-                                           border:none;border-radius:8px;
-                                           padding:5px 10px;color:white;
-                                           font-size:0.85rem;min-width:280px;">
-                            </div>
-                        @endif
-                        <form action="{{ route('boards.share', $board) }}" method="POST">
-                            @csrf
-                            <button type="submit"
-                                style="background:rgba(255,255,255,0.2);
-                                       color:white;border:none;border-radius:10px;
-                                       padding:7px 18px;font-weight:600;cursor:pointer;
-                                       font-size:0.9rem;">
-                                {{ $board->share_token ? 'Regenerate Share Link' : 'Generate Share Link' }}
-                            </button>
-                        </form>
-                    </div>
+            <div class="mt-4">
+                <div style="background:rgba(255,255,255,0.15);
+                            border-radius:12px;padding:12px 20px;
+                            display:inline-block;">
+                    <span style="font-size:0.85rem;opacity:0.8;">
+                        Total
+                    </span><br>
+                    <strong style="font-size:1.3rem;">
+                        Rp {{ number_format($items->sum('price'),
+                             0, ',', '.') }}
+                    </strong>
                 </div>
+            </div>
             @endunless
 
         </div><!-- /content -->
@@ -552,57 +547,155 @@
             document.getElementById('bellModal')
                 .style.display = 'flex';
         }
+
         function closeBellModal() {
             document.getElementById('bellModal')
                 .style.display = 'none';
         }
+
         function openComingSoon() {
             document.getElementById('comingSoonModal')
                 .style.display = 'flex';
         }
+
         function closeComingSoon() {
             document.getElementById('comingSoonModal')
                 .style.display = 'none';
         }
+
         function openSettingsModal() {
             document.getElementById('settingsModal')
                 .style.display = 'flex';
         }
+
         function closeSettingsModal() {
             document.getElementById('settingsModal')
                 .style.display = 'none';
         }
 
-        document.getElementById('item_url')?.addEventListener('paste', function(e) {
-            setTimeout(async () => {
-                const url = e.target.value;
-                if (!url) return;
-                const res = await fetch('{{ route("prefetch") }}', {
+        async function openShareModal() {
+            try {
+                const res = await fetch(
+                    '{{ route("boards.share", $board) }}',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    }
+                );
+                const data = await res.json();
+                if (data.share_url) {
+                    document.getElementById('share-link-display')
+                        .value = data.share_url;
+                    document.getElementById('shareLinkModal')
+                        .style.display = 'flex';
+                }
+            } catch (err) {
+                alert('Could not generate share link. Please try again.');
+            }
+        }
+
+        function closeShareLinkModal() {
+            document.getElementById('shareLinkModal')
+                .style.display = 'none';
+        }
+
+        function copyShareLink() {
+            const input = document.getElementById('share-link-display');
+            navigator.clipboard.writeText(input.value).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+            });
+        }
+
+        async function fetchProductInfo() {
+            const urlInput = document.querySelector('input[name="item_url"]');
+            const status = document.getElementById('prefetch-status');
+            const fetchBtn = document.getElementById('btn-fetch');
+
+            if (!urlInput || !urlInput.value) {
+                if (status) status.textContent =
+                    '⚠ Please paste a product link first.';
+                return;
+            }
+
+            const url = urlInput.value;
+
+            if (fetchBtn) {
+                fetchBtn.disabled = true;
+                fetchBtn.textContent = 'Fetching...';
+            }
+            if (status) status.textContent = 'Reading product info...';
+
+            try {
+                const res = await fetch('{{ route('prefetch') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ url })
+                    body: JSON.stringify({
+                        url: url
+                    })
                 });
+
                 const data = await res.json();
+
                 if (!data.error) {
-                    document.getElementById('title').value = data.title || '';
-                    document.getElementById('price').value = data.price || '';
-                    document.getElementById('image_url').value = data.image_url || '';
-                    document.getElementById('source').value = data.source || '';
+                    if (data.title) {
+                        document.querySelector('input[name="title"]')
+                            .value = data.title;
+                    }
+                    if (data.price) {
+                        document.querySelector('input[name="price"]')
+                            .value = data.price;
+                    }
+                    if (data.image_url) {
+                        document.querySelector('input[name="image_url"]')
+                            .value = data.image_url;
+                    }
+                    if (data.source) {
+                        document.querySelector('input[name="source"]')
+                            .value = data.source;
+                    }
+
+                    if (status) {
+                        status.textContent = data.title ?
+                            '✓ Product info fetched. Review and click Add Item.' :
+                            '⚠ Could not read product info. Fill in the name and price manually.';
+                    }
+                } else {
+                    if (status) {
+                        status.textContent =
+                            '⚠ Could not reach this link. Fill in the details manually.';
+                    }
                 }
-            }, 100);
-        });
+            } catch (err) {
+                if (status) {
+                    status.textContent =
+                        '⚠ Something went wrong. Fill in the details manually.';
+                }
+            } finally {
+                if (fetchBtn) {
+                    fetchBtn.disabled = false;
+                    fetchBtn.textContent = 'Fetch Info';
+                }
+            }
+        }
     </script>
 
     <!-- Bell Modal -->
     <div id="bellModal"
-         style="display:none;position:fixed;top:0;left:0;
+        style="display:none;position:fixed;top:0;left:0;
                 width:100%;height:100%;
                 background:rgba(0,0,0,0.4);z-index:9999;
                 align-items:center;justify-content:center;">
-        <div style="background:white;border-radius:16px;
+        <div
+            style="background:white;border-radius:16px;
                     padding:32px 28px;min-width:280px;
                     text-align:center;color:#333;">
             <div style="font-size:2rem;margin-bottom:12px;">🔔</div>
@@ -612,7 +705,7 @@
                 You have no notifications right now.
             </p>
             <button onclick="closeBellModal()"
-                    style="background:#3d2fa0;color:white;
+                style="background:#3d2fa0;color:white;
                            border:none;border-radius:8px;
                            padding:8px 24px;font-weight:600;
                            cursor:pointer;">
@@ -623,11 +716,12 @@
 
     <!-- Coming Soon Modal -->
     <div id="comingSoonModal"
-         style="display:none;position:fixed;top:0;left:0;
+        style="display:none;position:fixed;top:0;left:0;
                 width:100%;height:100%;
                 background:rgba(0,0,0,0.4);z-index:9999;
                 align-items:center;justify-content:center;">
-        <div style="background:white;border-radius:16px;
+        <div
+            style="background:white;border-radius:16px;
                     padding:32px 28px;min-width:280px;
                     text-align:center;color:#333;">
             <div style="font-size:2rem;margin-bottom:12px;">🚧</div>
@@ -637,7 +731,7 @@
                 This feature is still in development. Stay tuned!
             </p>
             <button onclick="closeComingSoon()"
-                    style="background:#3d2fa0;color:white;
+                style="background:#3d2fa0;color:white;
                            border:none;border-radius:8px;
                            padding:8px 24px;font-weight:600;
                            cursor:pointer;">
@@ -648,26 +742,24 @@
 
     <!-- Settings Modal -->
     <div id="settingsModal"
-         style="display:none;position:fixed;top:0;left:0;
+        style="display:none;position:fixed;top:0;left:0;
                 width:100%;height:100%;
                 background:rgba(0,0,0,0.4);z-index:9999;
                 align-items:center;justify-content:center;">
         <div style="background:white;border-radius:16px;
                     padding:28px;min-width:320px;color:#333;">
             <h5 class="fw-bold mb-4">⚙️ Settings</h5>
-            <div style="display:flex;align-items:center;
+            <div
+                style="display:flex;align-items:center;
                         justify-content:space-between;
                         background:#f5f5f5;border-radius:12px;
                         padding:14px 18px;margin-bottom:20px;">
                 <span style="font-weight:600;">Dark Mode</span>
-                <form action="{{ route('profile.darkmode') }}"
-                      method="POST">
+                <form action="{{ route('profile.darkmode') }}" method="POST">
                     @csrf
                     <button type="submit"
-                        style="background:{{ Auth::user()->dark_mode
-                               ? '#6c4ee0' : '#ddd' }};
-                               color:{{ Auth::user()->dark_mode
-                               ? 'white' : '#333' }};
+                        style="background:{{ Auth::user()->dark_mode ? '#6c4ee0' : '#ddd' }};
+                               color:{{ Auth::user()->dark_mode ? 'white' : '#333' }};
                                border:none;border-radius:20px;
                                padding:6px 20px;font-weight:600;
                                cursor:pointer;min-width:60px;">
@@ -677,7 +769,7 @@
             </div>
             <div class="d-flex justify-content-end">
                 <button onclick="closeSettingsModal()"
-                        style="background:#3d2fa0;color:white;
+                    style="background:#3d2fa0;color:white;
                                border:none;border-radius:8px;
                                padding:8px 24px;font-weight:600;
                                cursor:pointer;">
@@ -687,7 +779,47 @@
         </div>
     </div>
 
+    <!-- Share Link Modal -->
+    <div id="shareLinkModal"
+         style="display:none;position:fixed;top:0;left:0;
+                width:100%;height:100%;
+                background:rgba(0,0,0,0.5);z-index:9999;
+                align-items:center;justify-content:center;">
+        <div style="background:white;border-radius:16px;
+                    padding:28px;min-width:340px;
+                    max-width:480px;color:#333;">
+            <h5 class="fw-bold mb-3">🔗 Share This Board</h5>
+            <p style="font-size:0.9rem;color:#666;margin-bottom:12px;">
+                Anyone with this link can view this board.
+            </p>
+            <div style="display:flex;gap:8px;align-items:center;
+                        margin-bottom:20px;">
+                <input type="text" id="share-link-display"
+                       readonly
+                       style="flex:1;padding:8px 12px;
+                              border:1px solid #ddd;
+                              border-radius:8px;font-size:0.85rem;
+                              color:#333;background:#f9f9f9;">
+                <button onclick="copyShareLink()"
+                        id="copy-btn"
+                        style="background:#3d2fa0;color:white;
+                               border:none;border-radius:8px;
+                               padding:8px 16px;font-weight:600;
+                               cursor:pointer;white-space:nowrap;">
+                    Copy
+                </button>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button onclick="closeShareLinkModal()"
+                        style="background:#eee;border:none;
+                               border-radius:8px;padding:8px 24px;
+                               font-weight:600;cursor:pointer;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
-

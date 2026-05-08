@@ -227,33 +227,36 @@
 
             </div>
 
-            <form action="{{ route('boards.store') }}" method="POST" class="d-flex gap-2 mb-4">
-                @csrf
-                <input type="text" name="name" placeholder="New board name..." required
-                    style="padding:10px 15px;border-radius:10px;border:none;
-                           outline:none;background:#e6e6e6;color:#333;
-                           font-size:14px;flex:1;max-width:300px;">
-                <button type="submit"
-                    style="background:#e6e6e6;color:#333;
-                           border:none;border-radius:10px;padding:10px 20px;
-                           font-weight:700;cursor:pointer;">
-                    + Create
-                </button>
-            </form>
+           <div class="d-flex align-items-center gap-2 mb-4">
 
-            <form action="" method="POST" id="delete-board-form"
-                  class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button type="button" id="btn-delete-board"
-                        onclick="openDeleteModal()"
-                        style="background:rgba(255,255,255,0.25);
-                               color:white;border:none;border-radius:10px;
-                               padding:8px 20px;font-weight:700;
-                               cursor:pointer;">
-                    Delete Board
-                </button>
-            </form>
+    <form action="{{ route('boards.store') }}" method="POST" class="d-flex gap-2 m-0">
+        @csrf
+        <input type="text" name="name" placeholder="New board name..." required
+            style="padding:10px 15px;border-radius:10px;border:none;
+                   outline:none;background:#e6e6e6;color:#333;
+                   font-size:14px;flex:1;max-width:300px;">
+        <button type="submit"
+            style="background:#e6e6e6;color:#333;
+                   border:none;border-radius:10px;padding:10px 20px;
+                   font-weight:700;cursor:pointer;">
+            + Create
+        </button>
+    </form>
+
+    <form action="" method="POST" id="delete-board-form" class="m-0">
+        @csrf
+        @method('DELETE')
+        <button type="button" id="btn-delete-board"
+            onclick="openDeleteModal()"
+            style="background:rgba(255,255,255,0.25);
+                   color:white;border:none;border-radius:10px;
+                   padding:10px 20px;font-weight:700;
+                   cursor:pointer;">
+            Delete Board
+        </button>
+    </form>
+
+</div>
 
             <div class="row g-4">
 

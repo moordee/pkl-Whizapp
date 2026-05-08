@@ -22,20 +22,38 @@ class WishlistItemController extends Controller
         }
 
         $validated = $request->validate([
-            'item_url'  => 'required|url',
+            'item_url'  => 'nullable|string|max:2048',
             'title'     => 'nullable|string|max:255',
+            'item_type' => 'nullable|string|max:100',
             'price'     => 'nullable|numeric',
             'image_url' => 'nullable|string|max:2048',
             'source'    => 'nullable|string|max:100',
+            'notes'     => 'nullable|string',
         ]);
+
+        $source = !empty($validated['source'])
+            ? $validated['source']
+            : ($validated['item_url']
+                ? preg_replace(
+                    '/^www\./',
+                    '',
+                    parse_url($validated['item_url'], PHP_URL_HOST) ?? ''
+                  )
+                : null);
 
         WishlistItem::create([
             'board_id'  => $board->id,
-            'item_url'  => $validated['item_url'],
-            'title'     => $validated['title'] ?? 'Untitled Item',
+            'item_url'  => $validated['item_url'] ?? null,
+            'title'     => !empty($validated['title'])
+                           ? $validated['title']
+                           : (!empty($source)
+                               ? 'Item from ' . $source
+                               : 'Untitled Item'),
+            'item_type' => $validated['item_type'] ?? null,
             'price'     => $validated['price'] ?? 0,
             'image_url' => $validated['image_url'] ?? null,
-            'source'    => $validated['source'] ?? null,
+            'source'    => $source ?: null,
+            'notes'     => $validated['notes'] ?? null,
         ]);
 
         return back()->with('success', 'Item added successfully.');
@@ -60,53 +78,55 @@ class WishlistItemController extends Controller
      */
     public function prefetch(Request $request)
     {
-        $request->validate([
-            'url' => 'required|url',
-        ]);
+        $request->validate(['url' => 'required|url']);
+
+        $url = $request->input('url');
 
         try {
-            $response = Http::withHeaders([
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            ])->timeout(5)->get($request->url);
+            $apiUrl = 'https://api.microlink.io?' . http_build_query([
+                'url'     => $url,
+                'meta'    => 'true',
+                'iframe'  => 'false',
+            ]);
+
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'Accept' => 'application/json',
+            ])->timeout(10)->get($apiUrl);
 
             if (!$response->successful()) {
-                return response()->json(['error' => 'Could not fetch URL'], 422);
+                return response()->json(
+                    ['error' => 'Could not fetch URL'], 422
+                );
             }
 
-            $html = $response->body();
+            $data = $response->json();
 
-            // Parse HTML
-            $dom = new DOMDocument();
-            @$dom->loadHTML($html);
-
-            $xpath = new DOMXPath($dom);
-
-            // Extract title
-            $titleNode = $xpath->query('//meta[@property="og:title"]/@content')->item(0);
-            $title = $titleNode ? $titleNode->value : null;
-
-            // Extract image
-            $imageNode = $xpath->query('//meta[@property="og:image"]/@content')->item(0);
-            $imageUrl = $imageNode ? $imageNode->value : null;
-
-            // Extract price
-            $priceNode = $xpath->query('//meta[@property="product:price:amount"]/@content')->item(0);
-            if (!$priceNode) {
-                $priceNode = $xpath->query('//meta[@property="og:price:amount"]/@content')->item(0);
+            if (($data['status'] ?? '') !== 'success') {
+                return response()->json(
+                    ['error' => 'Microlink could not parse this URL'], 422
+                );
             }
-            $price = $priceNode ? $priceNode->value : null;
 
-            // Extract source (domain name)
-            $source = parse_url($request->url, PHP_URL_HOST);
+            $result   = $data['data'] ?? [];
+            $title    = $result['title'] ?? null;
+            $image    = $result['image']['url']
+                     ?? $result['logo']['url']
+                     ?? null;
+            $price    = $result['price'] ?? null;
+            $source   = parse_url($url, PHP_URL_HOST);
+            $source   = preg_replace('/^www\./', '', $source ?? '');
 
             return response()->json([
-                'title' => $title,
-                'image_url' => $imageUrl,
-                'price' => $price,
-                'source' => $source,
+                'title'     => $title ? trim($title) : null,
+                'image_url' => $image ? trim($image) : null,
+                'price'     => $price ? trim($price) : null,
+                'source'    => $source,
             ]);
+
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Could not fetch URL'], 422);
+            return response()->json(
+                ['error' => 'Could not fetch URL'], 422
+            );
         }
     }
 }

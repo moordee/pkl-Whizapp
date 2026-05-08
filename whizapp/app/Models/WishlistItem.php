@@ -19,10 +19,12 @@ class WishlistItem extends Model
     protected $fillable = [
         'board_id',
         'title',
+        'item_type',
         'price',
         'image_url',
         'item_url',
         'source',
+        'notes',
     ];
 
     /**
