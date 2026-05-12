@@ -203,11 +203,11 @@
                     </div>
 
                     <div class="col-12 mt-3">
-                        <button id="save-btn" type="submit"
-                            class="btn btn-light fw-bold px-4"
+                        <button id="save-light fw-bold px-4"
                             style="display:none;border-radius:10px;">
                             Save Changes
-                        </button>
+                        </button>-btn" type="submit"
+                            class="btn btn
                     </div>
                 </div>
             </form>

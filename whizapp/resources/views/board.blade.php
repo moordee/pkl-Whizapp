@@ -315,6 +315,14 @@
         body.dark-mode .footer {
             color: white !important;
         }
+
+        .add-item-input,
+        #title, #price, #item_type, #source, #notes,
+        input[name="title"], input[name="price"],
+        input[name="item_type"], input[name="source"],
+        textarea[name="notes"] {
+            color: #333 !important;
+        }
     </style>
 </head>
 
@@ -426,13 +434,6 @@
                                       background:rgba(255,255,255,0.85);
                                       color:#333;outline:none;flex:1;
                                       min-width:250px;">
-                        <input type="number" name="price" id="price"
-                               placeholder="Price (Rp)"
-                               step="0.01" min="0"
-                               style="padding:8px 14px;border-radius:10px;
-                                      border:none;
-                                      background:rgba(255,255,255,0.85);
-                                      color:#333;outline:none;width:160px;">
                     </div>
                     <div class="d-flex gap-2 flex-wrap mb-2">
                         <input type="text" name="item_type" id="item_type"
@@ -442,20 +443,26 @@
                                       background:rgba(255,255,255,0.85);
                                       color:#333;outline:none;flex:1;
                                       min-width:250px;">
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap mb-2">
+                        <input type="number" name="price" id="price"
+                               placeholder="Price (Rp)"
+                               step="0.01" min="0"
+                               style="padding:8px 14px;border-radius:10px;border:none;
+                                      background:rgba(255,255,255,0.85);color:#333;
+                                      outline:none;flex:1;min-width:120px;">
                         <input type="text" name="source" id="source"
                                placeholder="Source (e.g. Shopee, Amazon)"
-                               style="padding:8px 14px;border-radius:10px;
-                                      border:none;
-                                      background:rgba(255,255,255,0.85);
-                                      color:#333;outline:none;width:200px;">
+                               style="padding:8px 14px;border-radius:10px;border:none;
+                                      background:rgba(255,255,255,0.85);color:#333;
+                                      outline:none;flex:1;min-width:120px;">
                     </div>
                     <textarea name="notes" id="notes" rows="2"
                               placeholder="Additional notes (optional)"
-                              style="padding:8px 14px;border-radius:10px;
-                                     border:none;
-                                     background:rgba(255,255,255,0.85);
-                                     color:#333;outline:none;width:100%;
-                                     margin-bottom:8px;resize:vertical;">
+                              style="padding:8px 14px;border-radius:10px;border:none;
+                                     background:rgba(255,255,255,0.85);color:#333;
+                                     outline:none;width:100%;margin-bottom:8px;
+                                     resize:vertical;">
                     </textarea>
                     <input type="hidden" name="image_url" id="image_url">
                     <div id="prefetch-status"
@@ -466,7 +473,7 @@
             @endunless
             <!-- ── Total Amount ── -->
             @unless($readOnly ?? false)
-            <div class="mt-4">
+            <div class="mt-4 mb-4">
                 <div style="background:rgba(255,255,255,0.15);
                             border-radius:12px;padding:12px 20px;
                             display:inline-block;">
@@ -480,6 +487,68 @@
                 </div>
             </div>
             @endunless
+
+            <!-- ── Items List ── -->
+            @forelse($items as $item)
+            <div class="wishlist-card" id="card-{{ $item->id }}">
+                <input type="checkbox" class="card-checkbox"
+                       id="chk-{{ $item->id }}" />
+                @unless($readOnly ?? false)
+                <form action="{{ route('items.destroy', $item) }}"
+                      method="POST"
+                      style="position:absolute;top:12px;right:14px;
+                             background:none;border:none;padding:0;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn-delete"
+                            aria-label="Delete"
+                            style="position:static;">
+                        <img src="{{ asset('icons/DeleteHitam.png') }}"
+                             alt="Delete" />
+                    </button>
+                </form>
+                @endunless
+                <div class="product-img-wrap">
+                    @if($item->image_url)
+                        <img src="{{ $item->image_url }}"
+                             alt="{{ $item->title }}">
+                    @endif
+                </div>
+                <div class="product-info">
+                    <div class="product-name">{{ $item->title }}</div>
+                    <div class="product-desc">
+                        @if($item->item_type)
+                            Type: {{ $item->item_type }}<br>
+                        @endif
+                        Source: {{ $item->source ?? '—' }}<br>
+                        Price: Rp {{ number_format($item->price ?? 0,
+                                     0, ',', '.') }}
+                        @if($item->notes)
+                            <br><span style="font-style:italic;">
+                                {{ $item->notes }}
+                            </span>
+                        @endif
+                    </div>
+                    <div class="qty-control">
+                        <button class="qty-btn"
+                          onclick="changeQty('qty-{{ $item->id }}', -1)">
+                            −
+                        </button>
+                        <span class="qty-value"
+                              id="qty-{{ $item->id }}">1</span>
+                        <button class="qty-btn"
+                          onclick="changeQty('qty-{{ $item->id }}', 1)">
+                            +
+                        </button>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <p class="text-white opacity-75">
+                No items yet. Fill in the details above and click
+                Add Item to get started.
+            </p>
+            @endforelse
 
         </div><!-- /content -->
     </div>
