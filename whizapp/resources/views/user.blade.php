@@ -110,6 +110,10 @@
         body.dark-mode .footer {
             color: white !important;
         }
+        #save-btn:hover {
+            background: white !important;
+            color: #3d2fa0 !important;
+        }
         html { scroll-behavior: smooth; }
     </style>
 </head>
@@ -203,11 +207,10 @@
                     </div>
 
                     <div class="col-12 mt-3">
-                        <button id="save-light fw-bold px-4"
-                            style="display:none;border-radius:10px;">
+                        <button id="save-btn" class="fw-bold px-4"
+                            style="display:none;background:#3d2fa0;color:white;border:none;border-radius:8px;padding:8px 24px;font-weight:600;cursor:pointer;" type="submit">
                             Save Changes
-                        </button>-btn" type="submit"
-                            class="btn btn
+                        </button>
                     </div>
                 </div>
             </form>
@@ -339,6 +342,20 @@
             document.getElementById('save-btn')
                 .style.display = 'block';
         });
+    });
+
+    // Store original form values to detect changes
+    const profileForm = document.getElementById('profile-form');
+    const originalFormData = {};
+    document.querySelectorAll('#profile-form input, #profile-form textarea').forEach(el => {
+        originalFormData[el.name] = el.value;
+    });
+
+    // Reset button on successful form submission
+    profileForm.addEventListener('submit', () => {
+        setTimeout(() => {
+            document.getElementById('save-btn').style.display = 'none';
+        }, 500);
     });
 
     function openBellModal() {
